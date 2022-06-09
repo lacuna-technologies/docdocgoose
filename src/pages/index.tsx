@@ -1,9 +1,14 @@
 import type { NextPage } from 'next'
 
-const Home: NextPage = () => {
+interface Props {
+  wasmLoaded: boolean,
+}
+
+const Home: NextPage<Props> = ({ wasmLoaded }) => {
   return (
     <div>
-      Sup world
+      <h1>Sup world</h1>
+      <p>{JSON.stringify(wasmLoaded)}</p>
     </div>
   )
 }

@@ -15,7 +15,12 @@ DocsTogether supports the following features:
 
 Ensure you have Node.JS installed.
 
-### WASM
+### WebAssembly
 
-DocsTogether uses [pdfcpu](https://github.com/pdfcpu/pdfcpu), a PDF processing library written in Golang. To build an updated WASM module for [pdfcpu](https://github.com/pdfcpu/pdfcpu) install Golang and run `node ./scripts/build-pdfcpu-wasm.js`.
+DocsTogether uses [pdfcpu](https://github.com/pdfcpu/pdfcpu), a PDF processing library written in Golang. To build an updated WASM module for [pdfcpu](https://github.com/pdfcpu/pdfcpu), ensure Golang is installed, then run `./scripts/build-pdfcpu-wasm.sh`.
 
+Note that `wasm_exec.js` will have to be manually edited to replace all the `fs` calls appropriately.
+
+## Browser Support
+
+DocsTogether aims to support recent versions of Google Chrome, Mozilla Firefox, and Microsoft Edge. Other browsers may be supported as well if the requirements are not conflicting or drastically different. Microsoft Internet Explorer is not supported.
