@@ -8,7 +8,7 @@ tagName=${tagName:-v0.3.13}
 cd "$(dirname "$0")"
 
 rm -Rf pdfcpu
-git clone --depth 1 --branch $tagName https://github.com/hhrutter/pdfcpu
+git clone --depth 1 https://github.com/hueyy/pdfcpu
 cd pdfcpu/cmd/pdfcpu
 GOOS=js GOARCH=wasm go build -o pdfcpu.wasm
 mv pdfcpu.wasm ../../../../public/wasm/

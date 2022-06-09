@@ -3,3 +3,5 @@ scripts/pdfcpu/
 .DS_Store
 build/
 .next/
+*.pdf
+*.docx

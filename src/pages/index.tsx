@@ -6,9 +6,12 @@ interface Props {
 
 const Home: NextPage<Props> = ({ wasmLoaded }) => {
   return (
-    <div>
-      <h1>Sup world</h1>
-      <p>{JSON.stringify(wasmLoaded)}</p>
+    <div className="container max-w-screen-lg mx-auto px-4 mt-8 mb-8">
+      <h1>I have a:</h1>
+      <ul>
+        <li>PDF</li>
+        <li>DOCX</li>
+      </ul>
     </div>
   )
 }
