@@ -1,0 +1,5 @@
+scripts/pdfcpu/
+/node_modules
+.DS_Store
+build/
+.next/
