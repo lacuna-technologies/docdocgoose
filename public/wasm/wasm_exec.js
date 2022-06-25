@@ -13,10 +13,6 @@
 
   const isNode = globalThis.process && globalThis.process.title === `node`
 
-  // if(){
-  // 	console.log(`this is Node.JS`)
-  // }
-
   if (!globalThis.fs) {
     let outputBuf = ""
     globalThis.fs = {
@@ -63,6 +59,38 @@
       utimes(path, atime, mtime, callback) { callback(enosys()) },
     }
   }
+
+  globalThis.fs = new Proxy(globalThis.fs, {
+    get: (target, prop) => {
+      if (prop in target && target[prop] instanceof Function) {
+        return (...args) => {
+          if (prop.slice(-8) !== `Original`) {
+            console.log(`prop: `, prop)
+            console.log(`arguments: `, args)
+            const originalCallback = args.slice(-1)[0]
+            if (originalCallback instanceof Function) {
+              args[args.length - 1] = (...newArgs) => {
+                console.log(`callback for: `, prop)
+                console.log(`callback args: `, newArgs)
+                return Reflect.apply(originalCallback, newArgs.callee, newArgs)
+              }
+            }
+          }
+
+          if (isNode) {
+            const fs = require(`fs`)
+            if ([`open`, `fstat`, `read`, `close`].includes(prop)) {
+              return fs[prop](...args)
+            }
+          }
+
+          return Reflect.apply(target[prop], target, args)
+        }
+      } else {
+        return target[prop]
+      }
+    }
+  })
 
   if (!globalThis.process) {
     globalThis.process = {

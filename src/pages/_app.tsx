@@ -5,17 +5,19 @@ import Filer from 'filer'
 
 import 'styles/globals.css'
 
-globalThis.fs = new Filer.FileSystem({ provider: new Filer.FileSystem.providers.Memory() })
+globalThis.fs = new Filer.FileSystem({
+  provider: new Filer.FileSystem.providers.Memory()
+})
 globalThis.fs.writeOriginal = globalThis.fs.write
 globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
   if(fd === 1 || fd === 2){ // stdout or stderr
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder("utf-8")
     let outputBuf = "";
-    outputBuf += decoder.decode(buf);
-    const nl = outputBuf.lastIndexOf("\n");
+    outputBuf += decoder.decode(buf)
+    const nl = outputBuf.lastIndexOf("\n")
     if (nl != -1) {
-      console.log(outputBuf.substr(0, nl));
-      outputBuf = outputBuf.substr(nl + 1);
+      console.log(outputBuf.slice(0, nl));
+      outputBuf = outputBuf.slice(nl + 1)
     }
     callback(null, buf.length, buf)
   } else {
@@ -60,7 +62,7 @@ globalThis.fs.open = (path, flags, mode, callback) => {
 }
 globalThis.fs.fstatOriginal = globalThis.fs.fstat
 globalThis.fs.fstat = (fd, callback) => {
-  return global.fs.fstatOriginal(fd, (err, stats) => {
+  return globalThis.fs.fstatOriginal(fd, (err, stats) => {
     let retStat = stats
     delete retStat[`version`]
     delete retStat[`filedata`]
@@ -76,7 +78,6 @@ globalThis.fs.fstat = (fd, callback) => {
     retStat.birthtime = retStat.ctime
     retStat.nlink = retStat.nlinks
     delete retStat['nlinks']
-    console.log(retStat)
     return callback(err, retStat)
   })
 }
