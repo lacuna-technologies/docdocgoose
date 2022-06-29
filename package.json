@@ -32,6 +32,7 @@
     "typescript": "^4.7.3"
   },
   "dependencies": {
+    "browserfs": "^1.4.3",
     "filer": "^1.4.1",
     "next": "^12.1.6",
     "react": "^18.1.0",

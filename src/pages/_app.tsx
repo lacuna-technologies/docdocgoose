@@ -2,42 +2,71 @@ import type { AppProps } from 'next/app'
 import Script from 'next/script'
 import { useState, useEffect, useCallback } from 'react'
 import Filer from 'filer'
+import { configure, BFSRequire } from 'browserfs'
 
 import 'styles/globals.css'
 
-globalThis.fs = new Filer.FileSystem({
-  provider: new Filer.FileSystem.providers.Memory()
+let bfs
+
+configure({
+  fs: `InMemory`,
+  options: {},
+}, (error) => {
+  if (error) {
+    throw error
+  }
+  bfs = BFSRequire(`fs`)
 })
+
+globalThis.Buffer = BFSRequire('buffer').Buffer
+
+// globalThis.fs = new Filer.FileSystem({
+//   provider: new Filer.FileSystem.providers.Memory()
+// })
+globalThis.fs = bfs
 globalThis.fs.writeOriginal = globalThis.fs.write
-globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
-  if(fd === 1 || fd === 2){ // stdout or stderr
-    const decoder = new TextDecoder("utf-8")
-    let outputBuf = "";
-    outputBuf += decoder.decode(buf)
-    const nl = outputBuf.lastIndexOf("\n")
-    if (nl != -1) {
-      console.log(outputBuf.slice(0, nl));
-      outputBuf = outputBuf.slice(nl + 1)
+// globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
+//   if(fd === 1 || fd === 2){ // stdout or stderr
+//     const decoder = new TextDecoder("utf-8")
+//     let outputBuf = "";
+//     outputBuf += decoder.decode(buf)
+//     const nl = outputBuf.lastIndexOf("\n")
+//     if (nl != -1) {
+//       console.log(outputBuf.slice(0, nl));
+//       outputBuf = outputBuf.slice(nl + 1)
+//     }
+//     callback(null, buf.length, buf)
+//   } else {
+//     return globalThis.fs.writeOriginal(fd, buf, offset, length, position, callback)
+//   }
+// }
+globalThis.fs.write = function(fd, buf, offset, length, position, callback) {
+  if (fd === 1 || fd === 2) {
+    if (offset !== 0 || length !== buf.length || position !== null) {
+      throw new Error("not implemented");
     }
-    callback(null, buf.length, buf)
+    const n = globalThis.writeSync(fd, buf);
+    callback(null, n, buf);
   } else {
+    // buf:
+    buf = Buffer.from(buf)
     return globalThis.fs.writeOriginal(fd, buf, offset, length, position, callback)
   }
 }
-globalThis.fs.writeSync = (fd, buf, offset, length, position) => {
-  let done = false
-  let result = null
-  while(!done){
-    globalThis.fs.write(fd, buf, offset, length, position, (err, bytesWritten, buffer) => {
-      if(err) {
-        throw err
-      }
-      done = true
-      result = bytesWritten
-    })
-  }
-  return result
-}
+// globalThis.fs.writeSync = (fd, buf, offset, length, position) => {
+//   let done = false
+//   let result = null
+//   while(!done){
+//     globalThis.fs.write(fd, buf, offset, length, position, (err, bytesWritten, buffer) => {
+//       if(err) {
+//         throw err
+//       }
+//       done = true
+//       result = bytesWritten
+//     })
+//   }
+//   return result
+// }
 globalThis.fs.openOriginal = globalThis.fs.open
 globalThis.fs.open = (path, flags, mode, callback) => {
   let currentFlags = `r`
@@ -48,7 +77,9 @@ globalThis.fs.open = (path, flags, mode, callback) => {
   } else if(flags & constants.O_WRONLY) {
     currentFlags = `w`
   } else if (flags & constants.O_RDWR) {
-    if (flags & constants.O_CREAT && flags & constants.O_TRUNC) {
+    if (flags & constants.O_EXCL) {
+        currentFlags = 'wx+';
+    } else if (flags & constants.O_CREAT && flags & constants.O_TRUNC) {
       currentFlags = 'w+'
     } else {
       currentFlags = 'r+'
@@ -64,23 +95,36 @@ globalThis.fs.fstatOriginal = globalThis.fs.fstat
 globalThis.fs.fstat = (fd, callback) => {
   return globalThis.fs.fstatOriginal(fd, (err, stats) => {
     let retStat = stats
-    delete retStat[`version`]
-    delete retStat[`filedata`]
-    retStat.dev = 0
-    retStat.ino = 0
-    retStat.rdev = 0
-    retStat.blksize = 4096
-    retStat.blocks = Math.ceil(retStat.size / 512)
+    delete retStat[`fileData`]
     retStat.atimeMs = retStat.atime.getTime()
     retStat.mtimeMs = retStat.mtime.getTime()
     retStat.ctimeMs = retStat.ctime.getTime()
-    retStat.birthtimeMs = retStat.ctimeMs
-    retStat.birthtime = retStat.ctime
-    retStat.nlink = retStat.nlinks
-    delete retStat['nlinks']
+    retStat.birthtimeMs = retStat.birthtime.getTime()
     return callback(err, retStat)
   })
 }
+// globalThis.fs.fstat = (fd, callback) => { for filer
+//   return globalThis.fs.fstatOriginal(fd, (err, stats) => {
+//     let retStat = stats
+//     delete retStat[`version`]
+//     delete retStat[`filedata`]
+//     retStat.dev = 0
+//     retStat.ino = 0
+//     retStat.rdev = 0
+//     retStat.blksize = 4096
+//     retStat.blocks = Math.ceil(retStat.size / 512)
+//     retStat.atimeMs = retStat.atime.getTime()
+//     retStat.mtimeMs = retStat.mtime.getTime()
+//     retStat.ctimeMs = retStat.ctime.getTime()
+//     retStat.birthtimeMs = retStat.ctimeMs
+//     retStat.birthtime = retStat.ctime
+//     retStat.nlink = retStat.nlinks
+//     delete retStat['nlinks']
+//     return callback(err, retStat)
+//   })
+// }
+// globalThis.fs.read = bfs.read
+// globalThis.fs.readFile = bfs.readFile
 
 const DocsTogether = ({ Component, pageProps }: AppProps) => {
   const [wasmLoaded, setWasmLoaded] = useState(false)
@@ -114,7 +158,7 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     if(go !== null){
       // runPdfCpu([`version`, `-c`, `disable`])
-      runPdfCpu([`permissions`, `list`, `-v`, `/test2.pdf`])
+      runPdfCpu([`info`, `/test2.pdf`])
     }
   }, [go])
 
