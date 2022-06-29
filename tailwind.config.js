@@ -6,7 +6,14 @@ module.exports = {
     path.join(__dirname, "./src/components/**/*{.js,ts,jsx,tsx}"),
   ],
   theme: {
-    extend: {},
+    fontFamily: {
+      sans: [
+        `Inter`,
+        `-apple-system`, `BlinkMacSystemFont`, `Segoe\\ UI`,
+        `Roboto`, `Helvetica\\ Neue`, `Arial`,
+        `sans-serif`,
+      ]
+    }
   },
   plugins: [],
 }

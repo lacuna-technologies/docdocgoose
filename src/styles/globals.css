@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  font-size: 1.2rem;
+}
+
+@layer base {
+  a {
+    @apply underline decoration-dotted;
+  }
+  a:hover {
+    @apply decoration-solid;
+  }
+}
