@@ -1,6 +1,9 @@
 import { configure, BFSRequire } from 'browserfs'
 
-let bfs, go, stdout = ``, stderr = ``
+let bfs,
+    go = null,
+    stdout: string[] = [],
+    stderr:string[] = []
 
 configure({
   fs: `InMemory`,
@@ -41,11 +44,11 @@ globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
       if(fd === 1){
         // stdout
         console.log(outputBuf.slice(0, nl))
-        stdout += outputBuf.slice(0, nl)
+        stdout.push(outputBuf.slice(0, nl))
       } else {
         // stderr
         console.error(outputBuf.slice(0, nl))
-        stderr += outputBuf.slice(0, nl)
+        stderr.push(outputBuf.slice(0, nl))
       }
       outputBuf = outputBuf.slice(nl + 1)
     }
@@ -117,8 +120,8 @@ globalThis.fs.close = (fd, callback) => {
 }
 
 const clearStd = () => {
-  stdout = ``
-  stderr = ``
+  stdout = []
+  stderr = []
 }
 
 const run = async (params: string[]) => {

@@ -9,6 +9,14 @@ const set = (key: string, value: any) => {
   return value
 }
 
+interface File extends Blob {
+  path: string,
+  name: string,
+  lastModified: number,
+  size: number,
+  type: string
+}
+
 const FILE_KEY = `SELECTED_FILE`
 const setFile = (file: File) => set(FILE_KEY, file)
 const getFile = (): File => get(FILE_KEY)
