@@ -148,11 +148,56 @@ const setGo = (value: any) => {
   go = value
 }
 
+const getInfo = async (filePath: string) => {
+  const {
+    exitCode,
+    stdout,
+    stderr
+  } = await run([`info`, filePath])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  const values = stdout.map((line) => line.split(`: `))
+  const clean = (vals: string[]) => {
+    const val = vals[1].trim()
+    if(val === `Yes`){
+      return true
+    } else if (val === `No`) {
+      return false
+    }
+    return val
+  }
+  const info = {
+    pdfVersion: clean(values[0]),
+    pageCount: clean(values[1]),
+    pageSize: clean(values[2]),
+    title: clean(values[4]),
+    author: clean(values[5]),
+    subject: clean(values[6]),
+    pdfProducer: clean(values[7]),
+    contentCreator: clean(values[8]),
+    creationDate: clean(values[9]),
+    modificationDate: clean(values[10]),
+    tagged: clean(values[12]),
+    hybrid: clean(values[13]),
+    linearized: clean(values[14]),
+    xrefStreams: clean(values[15]),
+    objectStreams: clean(values[16]),
+    watermarked: clean(values[17]),
+    thumbnails: clean(values[18]),
+    acroform: clean(values[19]),
+    encrypted: clean(values[21]),
+    permissions: clean(values[22]),
+  }
+  return info
+}
+
 const PdfCpu = {
   run,
   setGo,
   go,
   clearStd,
+  getInfo,
 }
 
 export default PdfCpu

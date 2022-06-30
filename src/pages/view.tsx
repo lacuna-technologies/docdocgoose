@@ -24,7 +24,7 @@ const View = ({ wasmLoaded }) => {
         if(err){
           throw err
         }
-        const result = await PdfCpu.run([`info`, `/${file.path}`])
+        const result = await PdfCpu.getInfo(`/${file.path}`)
         console.log(`result`, result)
       })
     })()
