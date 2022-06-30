@@ -22,7 +22,7 @@ const Home: NextPage<Props> = ({ wasmLoaded }) => {
       <Header></Header>
       <div className="container max-w-screen-lg mx-auto py-8 grow">
         <div className="flex flex-row">
-          <div>
+          <div className="basis-2/3">
             <h2 className="text-3xl font-bold">Edit your document,<br />directly in your browser</h2>
             <ul className="mt-6">
               <Feature

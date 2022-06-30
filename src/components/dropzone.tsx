@@ -1,10 +1,39 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { useRouter } from 'next/router'
+import Storage from 'utils/Storage'
 
 const DropZone = () => {
+  const router = useRouter()
+  const onDrop = useCallback(acceptedFiles => {
+    Storage.setFile(acceptedFiles[0])
+    router.push(`/view`)
+  }, [])
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      'application/pdf': [`.pdf`],
+      'application/msword': [`.doc`],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [`.docx`],
+      // TODO: xlsx & pptx
+    },
+    maxFiles: 1,
+    onDrop
+  })
+
   return (
-    <div className="flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer">
-      <p>Drop your file here</p>
-      <p className="text-sm">(or click to select a file from your computer)</p>
+    <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer" {...getRootProps()}>
+      <input {...getInputProps()} />
+      {isDragActive
+        ? (
+          <p>Drop your file here</p>
+        )
+        : (
+          <>
+            <p>Drag and drop your file here </p>
+            <p className="text-sm">(or click to select a file from your computer)</p>
+          </>
+        )
+      }
     </div>
   )
 }
