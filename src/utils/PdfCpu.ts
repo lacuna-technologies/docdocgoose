@@ -35,6 +35,9 @@ globalThis.fs.constants = {
 globalThis.fs.writeOriginal = globalThis.fs.write
 globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
   if(fd === 1 || fd === 2){ // stdout or stderr
+    if (offset !== 0 || length !== buf.length || position !== null) {
+      throw new Error("not implemented");
+    }
     const decoder = new TextDecoder("utf-8")
     let outputBuf = "";
     outputBuf += decoder.decode(buf)
@@ -57,7 +60,7 @@ globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
     return globalThis.fs.writeOriginal(fd, buf, offset, length, position, callback)
   }
 }
-global.fs.writeSyncOriginal = global.fs.writeSync
+globalThis.fs.writeSyncOriginal = globalThis.fs.writeSync
 globalThis.fs.writeSync = (fd, buf, offset, length, position) => {
   let done = false
   let result = null
@@ -109,7 +112,7 @@ globalThis.fs.fstat = (fd, callback) => {
   })
 }
 
-globalThis.fs.closeOriginal = global.fs.close
+globalThis.fs.closeOriginal = globalThis.fs.close
 globalThis.fs.close = (fd, callback) => {
   return globalThis.fs.closeOriginal(fd, (err) => {
     if (typeof err === 'undefined'){
@@ -137,8 +140,8 @@ const run = async (params: string[]) => {
   go.run(result.instance)
   const response = {
     exitCode: go.exitCode,
-    stdout,
-    stderr
+    stdout: stdout.slice(),
+    stderr: stderr.slice()
   }
   clearStd()
   return response
@@ -159,6 +162,7 @@ export type FileInfo = {
   contentCreator: string,
   creationDate: string,
   modificationDate: string,
+  properties?: string,
   tagged: boolean,
   hybrid: boolean,
   linearized: boolean,
@@ -180,11 +184,8 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
   }
-  const values = stdout.map((line) => line.split(`: `))
-  const clean = (vals: string[]) => {
-    const val = vals[1].trim()
-    return val
-  }
+  let info = {} as FileInfo
+
   const booleanise = (val) => {
     if(val === `Yes`){
       return true
@@ -194,29 +195,133 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
       throw Error(`Cannot booleanise ${val}`)
     }
   }
-  const info: FileInfo = {
-    pdfVersion: clean(values[0]),
-    pageCount: Number(clean(values[1])),
-    pageSize: clean(values[2]),
-    title: clean(values[4]),
-    author: clean(values[5]),
-    subject: clean(values[6]),
-    pdfProducer: clean(values[7]),
-    contentCreator: clean(values[8]),
-    creationDate: clean(values[9]),
-    modificationDate: clean(values[10]),
-    tagged: booleanise(clean(values[12])),
-    hybrid: booleanise(clean(values[13])),
-    linearized: booleanise(clean(values[14])),
-    xrefStreams: booleanise(clean(values[15])),
-    objectStreams: booleanise(clean(values[16])),
-    watermarked: booleanise(clean(values[17])),
-    thumbnails: booleanise(clean(values[18])),
-    acroform: booleanise(clean(values[19])),
-    encrypted: booleanise(clean(values[21])),
-    permissions: clean(values[22]),
+
+  const values = stdout
+    .filter((line) => !line.match(/\.{10,}/))
+    .reduce((acc, line, index) => {
+      const parts = line.split(`: `).map(v => v.trim())
+      if(parts.length !== 2){
+        return [
+          ...acc.slice(0, index - 1),
+          [acc[index - 1][0], acc[index - 1][1] + `\n` + line],
+        ]
+      } else {
+        return [...acc, parts]
+      }
+    }, [])
+
+  for(const value of values){
+    const [label, data] = value
+    switch(label){
+      case `PDF version`: {
+        info.pdfVersion = data
+        break
+      }
+      case `Page count`: {
+        info.pageCount = Number(data)
+        break
+      }
+      case `Page size`: {
+        info.pageSize = data
+        break
+      }
+      case `Title`: {
+        info.title = data
+        break
+      }
+      case `Author`: {
+        info.author = data
+        break
+      }
+      case `Subject`: {
+        info.subject = data
+        break
+      }
+      case `PDF producer`: {
+        info.pdfProducer = data
+        break
+      }
+      case `Content creator`: {
+        info.contentCreator = data
+        break
+      }
+      case `Creation date`: {
+        info.creationDate = data
+        break
+      }
+      case `Modification date`: {
+        info.modificationDate = data
+        break
+      }
+      case `Properties`: {
+        info.properties = data
+        break
+      }
+      case `Tagged`: {
+        info.tagged = booleanise(data)
+        break
+      }
+      case `Hybrid`: {
+        info.hybrid = booleanise(data)
+        break
+      }
+      case `Linearized`: {
+        info.linearized = booleanise(data)
+        break
+      }
+      case `Using XRef streams`: {
+        info.xrefStreams = booleanise(data)
+        break
+      }
+      case `Using object streams`: {
+        info.objectStreams = booleanise(data)
+        break
+      }
+      case `Watermarked`: {
+        info.watermarked = booleanise(data)
+        break
+      }
+      case `Thumbnails`: {
+        info.thumbnails = booleanise(data)
+        break
+      }
+      case `AcroForm`: {
+        info.acroform = booleanise(data)
+        break
+      }
+      case `Encrypted`: {
+        info.encrypted = booleanise(data)
+        break
+      }
+      case `Permissions`: {
+        info.permissions = data
+        break
+      }
+      default: { //ignore
+        break
+      }
+    }
   }
+
   return info
+}
+
+const optimise = async (filePath: string) => {
+  const outPath = filePath.replace(/\.pdf$/, `-optimised.pdf`)
+  const {
+    exitCode,
+    stdout,
+    stderr
+  } = await run([`info`, `-v`, filePath/*, outPath*/])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    stdout,
+    stderr,
+    outPath
+  }
 }
 
 const PdfCpu = {
@@ -225,6 +330,7 @@ const PdfCpu = {
   go,
   clearStd,
   getInfo,
+  optimise,
 }
 
 export default PdfCpu
