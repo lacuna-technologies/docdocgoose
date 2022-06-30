@@ -148,7 +148,30 @@ const setGo = (value: any) => {
   go = value
 }
 
-const getInfo = async (filePath: string) => {
+export type FileInfo = {
+  pdfVersion: string,
+  pageCount: number,
+  pageSize: string,
+  title: string,
+  author: string,
+  subject: string,
+  pdfProducer: string,
+  contentCreator: string,
+  creationDate: string,
+  modificationDate: string,
+  tagged: boolean,
+  hybrid: boolean,
+  linearized: boolean,
+  xrefStreams: boolean,
+  objectStreams: boolean,
+  watermarked: boolean,
+  thumbnails: boolean,
+  acroform: boolean,
+  encrypted: boolean,
+  permissions: string,
+}
+
+const getInfo = async (filePath: string): Promise<FileInfo> => {
   const {
     exitCode,
     stdout,
@@ -160,16 +183,20 @@ const getInfo = async (filePath: string) => {
   const values = stdout.map((line) => line.split(`: `))
   const clean = (vals: string[]) => {
     const val = vals[1].trim()
+    return val
+  }
+  const booleanise = (val) => {
     if(val === `Yes`){
       return true
     } else if (val === `No`) {
       return false
+    } else {
+      throw Error(`Cannot booleanise ${val}`)
     }
-    return val
   }
-  const info = {
+  const info: FileInfo = {
     pdfVersion: clean(values[0]),
-    pageCount: clean(values[1]),
+    pageCount: Number(clean(values[1])),
     pageSize: clean(values[2]),
     title: clean(values[4]),
     author: clean(values[5]),
@@ -178,15 +205,15 @@ const getInfo = async (filePath: string) => {
     contentCreator: clean(values[8]),
     creationDate: clean(values[9]),
     modificationDate: clean(values[10]),
-    tagged: clean(values[12]),
-    hybrid: clean(values[13]),
-    linearized: clean(values[14]),
-    xrefStreams: clean(values[15]),
-    objectStreams: clean(values[16]),
-    watermarked: clean(values[17]),
-    thumbnails: clean(values[18]),
-    acroform: clean(values[19]),
-    encrypted: clean(values[21]),
+    tagged: booleanise(clean(values[12])),
+    hybrid: booleanise(clean(values[13])),
+    linearized: booleanise(clean(values[14])),
+    xrefStreams: booleanise(clean(values[15])),
+    objectStreams: booleanise(clean(values[16])),
+    watermarked: booleanise(clean(values[17])),
+    thumbnails: booleanise(clean(values[18])),
+    acroform: booleanise(clean(values[19])),
+    encrypted: booleanise(clean(values[21])),
     permissions: clean(values[22]),
   }
   return info

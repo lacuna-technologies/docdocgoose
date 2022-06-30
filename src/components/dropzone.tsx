@@ -1,14 +1,11 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useRouter } from 'next/router'
-import Storage from 'utils/Storage'
 
-const DropZone = () => {
-  const router = useRouter()
-  const onDrop = useCallback(acceptedFiles => {
-    Storage.setFile(acceptedFiles[0])
-    router.push(`/view`)
-  }, [])
+interface Props {
+  onDrop: (files: File[]) => void
+}
+
+const DropZone: React.FC<Props> = ({ onDrop }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       'application/pdf': [`.pdf`],

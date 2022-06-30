@@ -1,11 +1,10 @@
+import React, { useCallback, useState } from 'react'
 import type { NextPage } from 'next'
 import Header from 'components/header'
 import Footer from 'components/footer'
 import DropZone from 'components/dropzone'
-
-interface Props {
-  wasmLoaded: boolean,
-}
+import Storage from 'utils/Storage'
+import { useRouter } from 'next/router'
 
 const Feature = ({ title, content }) => {
   return (
@@ -16,7 +15,15 @@ const Feature = ({ title, content }) => {
   )
 }
 
-const Home: NextPage<Props> = ({ wasmLoaded }) => {
+const Home: NextPage = () => {
+  const router = useRouter()
+  const [dropped, setDropped] = useState(false)
+  const onDrop = useCallback((files) => {
+    setDropped(true)
+    Storage.setFile(files[0])
+    router.push(`/view`)
+  }, [])
+  
   return (
     <div className="bg-slate-200 h-screen flex flex-col">
       <Header></Header>
@@ -43,7 +50,16 @@ const Home: NextPage<Props> = ({ wasmLoaded }) => {
               />
             </ul>
           </div>
-          <DropZone />
+          {dropped ? (
+            <div className="basis-1/3 flex-col justify-center items-center p-4 text-center bg-slate-300">
+              Loading...
+            </div>
+          ) : (
+            <DropZone
+              onDrop={onDrop}
+            />
+          )}
+          
         </div>
         
       </div>
