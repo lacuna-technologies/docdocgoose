@@ -9,7 +9,7 @@ const set = (key: string, value: any) => {
   return value
 }
 
-interface File extends Blob {
+export interface File extends Blob {
   path: string,
   name: string,
   lastModified: number,

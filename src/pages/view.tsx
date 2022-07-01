@@ -1,14 +1,14 @@
 /* page that shows after file is selected */
-import React, { useState, useCallback } from 'react'
+import React from 'react'
 import Header from 'components/header'
 import Footer from 'components/footer'
-import { SecondaryButton } from 'components/button'
+import { PrimaryButton, SecondaryButton } from 'components/button'
 import Storage from 'utils/Storage'
 import type { NextPage } from 'next'
-import { humanFileSize } from 'utils/Uitls'
+import { humanFileSize } from 'utils/Utils'
 import useFileInfo from 'hooks/useFileInfo'
+import useOptimisePdf from 'hooks/useOptimisePdf'
 import FileInfoDetails from 'components/fileInfoDetails'
-import PdfCpu from 'utils/PdfCpu'
 import Spinner from 'components/spinner'
 
 interface Props {
@@ -23,20 +23,11 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
     fileInfo
   } = useFileInfo({ file, wasmLoaded })
 
-  const optimisePdf = useCallback(async () => {
-    const arrayBuffer = await file.arrayBuffer()
-    globalThis.fs.writeFile(`/${file.path}`, Buffer.from(arrayBuffer), async (err: any) => {
-      if(err){
-        throw err
-      }
-      try {
-        const result = await PdfCpu.optimise(`/${file.path}`)
-        console.log(result)
-      } catch (error){
-        console.error(error)
-      }
-    })
-  }, [file])
+  const {
+    optimising,
+    optimisedResult,
+    optimisePdf
+  } = useOptimisePdf({ file })
 
   return (
     <div className="bg-slate-200 h-screen flex flex-col">
@@ -47,6 +38,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
             <div>
               <SecondaryButton
                 href="/"
+                className="w-fit"
               >
                 ◀️ Pick another file
               </SecondaryButton>
@@ -72,9 +64,34 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                 fileInfo={fileInfo}
               />
               <div className="grid grid-cols-3 mt-6">
-                <SecondaryButton onClick={optimisePdf}>
-                  🪄 Optimise
-                </SecondaryButton>
+                {
+                  optimisedResult === null ? (
+                    <PrimaryButton
+                      onClick={optimisePdf}
+                      loading={optimising}
+                      loadingComponent={
+                        <>
+                          <Spinner>Optimising...</Spinner>
+                        </>
+                      }
+                    >
+                      🪄 Optimise
+                    </PrimaryButton>
+                  ) : (
+                    <PrimaryButton href={optimisedResult.url} download={optimisedResult.fileName}>
+                      <div className="flex justify-center items-center gap-4">
+                        <div className="text-2xl">💾</div>
+                        <div>
+                          <p>Save optimised file</p>
+                          {(optimisedResult.size < file.size)
+                            ? (<small className="text-xs">({humanFileSize(optimisedResult.size)}, {((file.size - optimisedResult.size)/file.size*100).toFixed(1)}% smaller)</small>)
+                            : null}
+                        </div>
+                      </div>
+                    </PrimaryButton>
+                  )
+                }
+                
               </div>
             </div>
           ) : (

@@ -6,3 +6,12 @@ export const humanFileSize = (byteCount: number) => {
   const unit = ["B", "kB", "MB", "GB", "TB"][i]
   return `${num}${unit}`
 }
+
+export const downloadBlob = (blob: Blob, fileName) => {
+  const link = document.createElement(`a`)
+  link.href = URL.createObjectURL(blob)
+  link.download = fileName
+  document.body.append(link)
+  link.click()
+  link.remove()
+}
