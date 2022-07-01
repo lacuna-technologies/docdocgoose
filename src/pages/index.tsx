@@ -5,6 +5,7 @@ import Footer from 'components/footer'
 import DropZone from 'components/dropzone'
 import Storage from 'utils/Storage'
 import { useRouter } from 'next/router'
+import Spinner from 'components/spinner'
 
 const Feature = ({ title, content }) => {
   return (
@@ -52,7 +53,7 @@ const Home: NextPage = () => {
           </div>
           {dropped ? (
             <div className="basis-1/3 flex-col justify-center items-center p-4 text-center bg-slate-300">
-              Loading...
+              <Spinner>Loading...</Spinner>
             </div>
           ) : (
             <DropZone
