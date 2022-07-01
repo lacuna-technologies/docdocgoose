@@ -5,3 +5,6 @@ build/
 .next/
 *.pdf
 *.docx
+# Local Netlify folder
+.netlify
+out/

@@ -23,7 +23,7 @@ const Home: NextPage = () => {
     setDropped(true)
     Storage.setFile(files[0])
     router.push(`/view`)
-  }, [])
+  }, [router])
   
   return (
     <div className="bg-slate-200 h-screen flex flex-col">
