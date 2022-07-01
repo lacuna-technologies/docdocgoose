@@ -6,7 +6,7 @@ interface Props {
 
 const Spinner: React.FC<Props> = ({ children }) => {
   return (
-    <div className="flex gap-2 items-center select-none">
+    <div className="flex gap-2 items-center select-none justify-center">
       <svg className="animate-spin w-4 h-4 text-black" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="black" strokeWidth="4"></circle>
         <path

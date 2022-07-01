@@ -14,11 +14,11 @@ const DropZone: React.FC<Props> = ({ onDrop }) => {
       // TODO: xlsx & pptx
     },
     maxFiles: 1,
-    onDrop
+    onDrop,
   })
 
   return (
-    <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer" {...getRootProps()}>
+    <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer border-2 border-dotted border-slate-400 outline-none" {...getRootProps()}>
       <input {...getInputProps()} />
       {isDragActive
         ? (

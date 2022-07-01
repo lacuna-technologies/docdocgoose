@@ -26,20 +26,20 @@ const Home: NextPage = () => {
   }, [router])
   
   return (
-    <div className="bg-slate-200 h-screen flex flex-col">
+    <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header></Header>
       <div className="container max-w-screen-lg mx-auto py-8 grow">
         <div className="flex flex-row">
           <div className="basis-2/3">
-            <h2 className="text-3xl font-bold">Edit your PDF,<br />directly in your browser</h2>
+            <h2 className="text-3xl font-bold">Edit PDFs,<br />directly in your browser</h2>
             <ul className="mt-6">
               <Feature
                 title="Restrictions"
-                content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting (coming soon)"
+                content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting"
               />
               <Feature
                 title="Organise"
-                content="Reaarrange, delete, or rotate pages, or merge documents (coming soon)"
+                content="Rearrange, delete, or rotate pages, or merge documents (coming soon)"
               />
               <Feature
                 title="Optimise"
@@ -52,7 +52,7 @@ const Home: NextPage = () => {
             </ul>
           </div>
           {dropped ? (
-            <div className="basis-1/3 flex-col justify-center items-center p-4 text-center bg-slate-300">
+            <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300">
               <Spinner>Loading...</Spinner>
             </div>
           ) : (

@@ -2,40 +2,38 @@ import { useCallback, useState } from "react"
 import PdfCpu from 'utils/PdfCpu'
 import type { File } from 'utils/Storage'
 
-interface OptimisedResult {
-  size: number,
+interface DecryptedResult {
   url: string,
   fileName: string,
 }
 
-const useOptimisePdf = ({ file }: { file: File }) => {
-  const [optimising, setOptimising] = useState(false)
-  const [optimisedResult, setOptimisedResult] = useState(null as OptimisedResult)
-  const optimisePdf = useCallback(async () => {
-    setOptimising(true)
+const useDecryptPdf = ({ file }: { file: File }) => {
+  const [decrypting, setDecrypting] = useState(false)
+  const [decryptedResult, setDecryptedResult] = useState(null as DecryptedResult)
+  const decryptPdf = useCallback(async () => {
+    setDecrypting(true)
     const arrayBuffer = await file.arrayBuffer()
     globalThis.fs.writeFileSync(`/${file.path}`, Buffer.from(arrayBuffer))
     try {
-      const { outPath } = await PdfCpu.optimise(`/${file.path}`)
+      const { outPath } = await PdfCpu.decrypt(`/${file.path}`)
       const outBuffer = globalThis.fs.readFileSync(outPath)
       const blob = new Blob([outBuffer])
-      setOptimisedResult({
+      setDecryptedResult({
         fileName: outPath.slice(1),
-        size: blob.size,
         url: URL.createObjectURL(blob),
       })
-    } catch (error){
+    } catch (error) {
       console.error(error)
     } finally {
-      setOptimising(false)
+      setDecrypting(false)
     }
   }, [file])
 
   return {
-    optimisePdf,
-    optimisedResult,
-    optimising,
+    decryptPdf,
+    decryptedResult,
+    decrypting,
   }
 }
 
-export default useOptimisePdf
+export default useDecryptPdf

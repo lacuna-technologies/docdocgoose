@@ -23,8 +23,8 @@ const getFile = (): File => get(FILE_KEY)
 
 const Storage = {
   get,
-  set,
   getFile,
+  set,
   setFile,
 }
 

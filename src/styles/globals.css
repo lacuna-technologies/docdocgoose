@@ -13,4 +13,7 @@ html {
   a:hover {
     @apply decoration-solid;
   }
+  ::selection {
+    @apply bg-slate-800/[.15];
+  }
 }

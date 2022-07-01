@@ -8,8 +8,17 @@ import type { NextPage } from 'next'
 import { humanFileSize } from 'utils/Utils'
 import useFileInfo from 'hooks/useFileInfo'
 import useOptimisePdf from 'hooks/useOptimisePdf'
+import useDecryptPdf from 'hooks/useDecryptPdf'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
+
+const Attribute = ({ children }) => {
+  return (
+    <small className="after:ml-2 after:content-['·'] last-of-type:after:content-[''] last-of-type:after:ml-0">
+      {children}
+    </small>
+  )
+}
 
 interface Props {
   wasmLoaded: boolean
@@ -20,17 +29,23 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
   const {
     fileLoaded,
     error,
-    fileInfo
+    fileInfo,
   } = useFileInfo({ file, wasmLoaded })
 
   const {
     optimising,
     optimisedResult,
-    optimisePdf
+    optimisePdf,
   } = useOptimisePdf({ file })
 
+  const {
+    decryptPdf,
+    decrypting,
+    decryptedResult,
+  } = useDecryptPdf({ file })
+
   return (
-    <div className="bg-slate-200 h-screen flex flex-col">
+    <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header></Header>
       <div className="container max-w-screen-lg mx-auto py-8 grow">
         {fileLoaded
@@ -46,24 +61,19 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                 {file.path}
               </h1>
               <div className="flex gap-x-2">
-                <small className="after:ml-2 after:content-['·']">
-                  {humanFileSize(file.size)}
-                </small>
-                <small className="after:ml-2 after:content-['·']">
-                  {fileInfo.pageCount} pages
-                </small>
-                <small className="after:ml-2 after:content-['·']">
-                  {fileInfo.encrypted ? `Encrypted` : `Not encrypted`}
-                </small>
-                <small>
-                  {fileInfo.permissions}
-                </small>
+                <Attribute>{humanFileSize(file.size)}</Attribute>
+                {(fileInfo.pageCount && Number.isInteger(fileInfo.pageCount)) &&
+                  <Attribute>{fileInfo.pageCount} pages</Attribute>}
+                {typeof fileInfo.encrypted !== `undefined` &&
+                  <Attribute>{fileInfo.encrypted ? `Encrypted` : `Not encrypted`}</Attribute>}
+                {/* {fileInfo.permissions &&
+                  <Attribute>{fileInfo.permissions}</Attribute>} */}
               </div>
               <FileInfoDetails
                 className="mt-2"
                 fileInfo={fileInfo}
               />
-              <div className="grid grid-cols-3 mt-6">
+              <div className="grid grid-cols-3 mt-6 gap-4">
                 {
                   optimisedResult === null ? (
                     <PrimaryButton
@@ -84,14 +94,41 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                         <div>
                           <p>Save optimised file</p>
                           {(optimisedResult.size < file.size)
-                            ? (<small className="text-xs">({humanFileSize(optimisedResult.size)}, {((file.size - optimisedResult.size)/file.size*100).toFixed(1)}% smaller)</small>)
+                            ? (<small className="text-xs">
+                                ({humanFileSize(optimisedResult.size)},&nbsp;
+                                {((file.size - optimisedResult.size)/file.size*100).toFixed(1)}
+                                % smaller)
+                              </small>)
                             : null}
                         </div>
                       </div>
                     </PrimaryButton>
                   )
                 }
-                
+                {
+                  decryptedResult === null ? (
+                    <PrimaryButton
+                      onClick={decryptPdf}
+                      loading={decrypting}
+                      loadingComponent={
+                        <>
+                          <Spinner>Decrypting...</Spinner>
+                        </>
+                      }
+                    >
+                      🔓 Remove restrictions
+                    </PrimaryButton>
+                  ) : (
+                    <PrimaryButton href={decryptedResult.url} download={decryptedResult.fileName}>
+                      <div className="flex justify-center items-center gap-4">
+                        <div className="text-2xl">💾</div>
+                        <div>
+                          <p>Save decrypted file</p>
+                        </div>
+                      </div>
+                    </PrimaryButton>
+                  )
+                }
               </div>
             </div>
           ) : (

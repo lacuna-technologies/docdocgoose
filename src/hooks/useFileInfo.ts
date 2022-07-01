@@ -29,20 +29,27 @@ const useFileInfo = ({ file, wasmLoaded }) => {
         }
         try {
           const result = await PdfCpu.getInfo(`/${file.path}`)
-          setFileLoaded(true)
           setFileInfo(result)
         } catch (error){
-          console.error(error)
-          setError(`Something went wrong when processing your file`)
+          if(error.message === `File is encrypted`){
+            setFileInfo({
+              encrypted: true,
+            })
+          } else {
+            console.error(error)
+            setError(`Something went wrong when processing your file`)
+          }
+        } finally {
+          setFileLoaded(true)
         }
       })
     })()
   }, [router, file, fileLoaded, wasmLoaded])
 
   return {
-    fileLoaded,
     error,
-    fileInfo
+    fileInfo,
+    fileLoaded,
   }
 }
 

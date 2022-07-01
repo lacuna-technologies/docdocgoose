@@ -20,9 +20,9 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
         ...{
           ...pageProps,
           app: {
-            wasmLoaded,
             go: PdfCpu.go,
-          }
+            wasmLoaded,
+          },
         }}
       />
       <Script

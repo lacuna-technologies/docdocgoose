@@ -17,31 +17,31 @@ configure({
 
 globalThis.fs = bfs
 globalThis.fs.constants = {
-  O_RDONLY: 0,
-  O_WRONLY: 1,
-  O_RDWR: 2,
-  O_CREAT: 64,
-  O_EXCL: 128,
-  O_NOCTTY: 256,
-  O_TRUNC: 512,
   O_APPEND: 1024,
-  O_DIRECTORY: 65536,
-  O_NOATIME: 262144,
-  O_NOFOLLOW: 131072,
-  O_SYNC: 1052672,
+  O_CREAT: 64,
   O_DIRECT: 16384,
+  O_DIRECTORY: 65536,
+  O_EXCL: 128,
+  O_NOATIME: 262144,
+  O_NOCTTY: 256,
+  O_NOFOLLOW: 131072,
   O_NONBLOCK: 2048,
+  O_RDONLY: 0,
+  O_RDWR: 2,
+  O_SYNC: 1052672,
+  O_TRUNC: 512,
+  O_WRONLY: 1,
 }
 globalThis.fs.writeOriginal = globalThis.fs.write
 globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
   if(fd === 1 || fd === 2){ // stdout or stderr
     if (offset !== 0 || length !== buf.length || position !== null) {
-      throw new Error("not implemented");
+      throw new Error(`not implemented`)
     }
-    const decoder = new TextDecoder("utf-8")
-    let outputBuf = ""
+    const decoder = new TextDecoder(`utf-8`)
+    let outputBuf = ``
     outputBuf += decoder.decode(buf)
-    const nl = outputBuf.lastIndexOf("\n")
+    const nl = outputBuf.lastIndexOf(`\n`)
     if (nl != -1) {
       // TODO: do not print in production
       if(fd === 1){
@@ -87,11 +87,11 @@ globalThis.fs.open = (path, flags, mode, callback) => {
     currentFlags = `w`
   } else if (flags & constants.O_RDWR) {
     if (flags & constants.O_EXCL) {
-        currentFlags = 'wx+';
+        currentFlags = `wx+`
     } else if (flags & constants.O_CREAT && flags & constants.O_TRUNC) {
-      currentFlags = 'w+'
+      currentFlags = `w+`
     } else {
-      currentFlags = 'r+'
+      currentFlags = `r+`
     }
   } else {
     console.log(`flags`, flags)
@@ -116,7 +116,7 @@ globalThis.fs.fstat = (fd, callback) => {
 globalThis.fs.closeOriginal = globalThis.fs.close
 globalThis.fs.close = (fd, callback) => {
   return globalThis.fs.closeOriginal(fd, (err) => {
-    if (typeof err === 'undefined'){
+    if (typeof err === `undefined`){
       err = null
     }
     return callback()
@@ -137,12 +137,12 @@ const run = async (params: string[]) => {
   }
   go.argv = [`pdfcpu.wasm`, ...params]
   go.env = { HOME: `/`, TMPDIR: `/tmp`, ...go.env }
-  const result = await WebAssembly.instantiateStreaming(fetch("/wasm/pdfcpu.wasm"), go.importObject)
+  const result = await WebAssembly.instantiateStreaming(fetch(`/wasm/pdfcpu.wasm`), go.importObject)
   go.run(result.instance)
   const response = {
     exitCode: go.exitCode,
+    stderr: stderr.slice(),
     stdout: stdout.slice(),
-    stderr: stderr.slice()
   }
   clearStd()
   return response
@@ -153,37 +153,40 @@ const setGo = (value: any) => {
 }
 
 export type FileInfo = {
-  pdfVersion: string,
-  pageCount: number,
-  pageSize: string,
-  title: string,
-  author: string,
-  subject: string,
-  pdfProducer: string,
-  contentCreator: string,
-  creationDate: string,
-  modificationDate: string,
+  pdfVersion?: string,
+  pageCount?: number,
+  pageSize?: string,
+  title?: string,
+  author?: string,
+  subject?: string,
+  pdfProducer?: string,
+  contentCreator?: string,
+  creationDate?: string,
+  modificationDate?: string,
   properties?: string,
-  tagged: boolean,
-  hybrid: boolean,
-  linearized: boolean,
-  xrefStreams: boolean,
-  objectStreams: boolean,
-  watermarked: boolean,
-  thumbnails: boolean,
-  acroform: boolean,
-  encrypted: boolean,
-  permissions: string,
+  tagged?: boolean,
+  hybrid?: boolean,
+  linearized?: boolean,
+  xrefStreams?: boolean,
+  objectStreams?: boolean,
+  watermarked?: boolean,
+  thumbnails?: boolean,
+  acroform?: boolean,
+  encrypted?: boolean,
+  permissions?: string,
 }
 
 const getInfo = async (filePath: string): Promise<FileInfo> => {
   const {
     exitCode,
     stdout,
-    stderr
+    stderr,
   } = await run([`info`, filePath])
+
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
+  } else if (stderr.some(l => l.includes(`decryptAESBytes: Ciphertext not a multiple of block size`))){
+    throw new Error(`File is encrypted`)
   }
   let info = {} as FileInfo
 
@@ -199,9 +202,20 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
 
   const values = stdout
     .filter((line) => !line.match(/\.{10,}/))
-    .reduce((acc, line, index) => {
-      const parts = line.split(`: `).map(v => v.trim())
-      if(parts.length !== 2){
+    .reduce((acc, line, index, array) => {
+      const parts = line.split(/:(?=\s|$)/).map(v => v.trim())
+      console.log(parts)
+      if(parts[0] === `Permissions`){
+        const result = [
+          ...acc,
+          [
+            parts[0],
+            [parts[1], ...array.slice(index + 1)].join(`\n`),
+          ],
+        ]
+        array.splice(1) // early exit
+        return result
+      } else if(parts.length !== 2){
         return [
           ...acc.slice(0, index - 1),
           [acc[index - 1][0], acc[index - 1][1] + `\n` + line],
@@ -210,6 +224,7 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
         return [...acc, parts]
       }
     }, [])
+  console.log(values)
 
   for(const value of values){
     const [label, data] = value
@@ -312,26 +327,50 @@ const optimise = async (filePath: string) => {
   const {
     exitCode,
     stdout,
-    stderr
+    stderr,
   } = await run([`optimize`, `-v`, filePath, outPath])
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
   }
   return {
     exitCode,
+    outPath,
+    stderr,
+    stdout,
+  }
+}
+
+const decrypt = async (filePath: string, userPassword?: string) => {
+  const outPath = filePath.replace(/\.pdf$/, `-decrypted.pdf`)
+  const {
+    exitCode,
     stdout,
     stderr,
-    outPath
+  } = await run([
+    `decrypt`,
+    ...(userPassword ? [`-upw`, userPassword] : []),
+    filePath,
+    outPath,
+  ])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    outPath,
+    stderr,
+    stdout,
   }
 }
 
 const PdfCpu = {
+  clearStd,
+  decrypt,
+  getInfo,
+  go,
+  optimise,
   run,
   setGo,
-  go,
-  clearStd,
-  getInfo,
-  optimise,
 }
 
 export default PdfCpu
