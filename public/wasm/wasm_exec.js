@@ -77,7 +77,7 @@
 
           if (isNode) {
             const fs = require(`fs`)
-            if ([`open`, `fstat`, `read`, `close`].includes(prop)) {
+            if ([`open`, `fstat`, `read`, `close`, `write`, `writeSync`].includes(prop)) {
               return fs[prop](...args)
             }
           }

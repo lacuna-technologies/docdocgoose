@@ -39,7 +39,7 @@ globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
       throw new Error("not implemented");
     }
     const decoder = new TextDecoder("utf-8")
-    let outputBuf = "";
+    let outputBuf = ""
     outputBuf += decoder.decode(buf)
     const nl = outputBuf.lastIndexOf("\n")
     if (nl != -1) {
@@ -57,6 +57,7 @@ globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
     }
     callback(null, buf.length, buf)
   } else {
+    buf = Buffer.from(buf)
     return globalThis.fs.writeOriginal(fd, buf, offset, length, position, callback)
   }
 }
@@ -312,7 +313,7 @@ const optimise = async (filePath: string) => {
     exitCode,
     stdout,
     stderr
-  } = await run([`info`, `-v`, filePath/*, outPath*/])
+  } = await run([`optimize`, `-v`, filePath, outPath])
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
   }
