@@ -12,7 +12,7 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
     if(wasmLoaded && PdfCpu.go === null){
       PdfCpu.setGo(new Go())
     }
-  }, [wasmLoaded, PdfCpu.go])
+  }, [wasmLoaded])
 
   return (
     <>
@@ -26,6 +26,7 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
         }}
       />
       <Script
+        id="wasm"
         src="/wasm/wasm_exec.js"
         onLoad={() => {
           setWasmLoaded(true)

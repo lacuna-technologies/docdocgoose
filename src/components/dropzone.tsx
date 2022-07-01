@@ -9,8 +9,8 @@ const DropZone: React.FC<Props> = ({ onDrop }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       'application/pdf': [`.pdf`],
-      'application/msword': [`.doc`],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [`.docx`],
+      // 'application/msword': [`.doc`],
+      // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [`.docx`],
       // TODO: xlsx & pptx
     },
     maxFiles: 1,

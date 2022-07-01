@@ -37,7 +37,7 @@ const useFileInfo = ({ file, wasmLoaded }) => {
         }
       })
     })()
-  }, [file, fileLoaded, wasmLoaded])
+  }, [router, file, fileLoaded, wasmLoaded])
 
   return {
     fileLoaded,

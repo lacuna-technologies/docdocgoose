@@ -31,15 +31,15 @@ const Home: NextPage = () => {
       <div className="container max-w-screen-lg mx-auto py-8 grow">
         <div className="flex flex-row">
           <div className="basis-2/3">
-            <h2 className="text-3xl font-bold">Edit your document,<br />directly in your browser</h2>
+            <h2 className="text-3xl font-bold">Edit your PDF,<br />directly in your browser</h2>
             <ul className="mt-6">
               <Feature
                 title="Restrictions"
-                content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting"
+                content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting (coming soon)"
               />
               <Feature
                 title="Organise"
-                content="Reaarrange, delete, or rotate pages, or merge documents"
+                content="Reaarrange, delete, or rotate pages, or merge documents (coming soon)"
               />
               <Feature
                 title="Optimise"
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
               />
               <Feature
                 title="OCR"
-                content="Make the text in your document selectable and highlightable"
+                content="Make the text in your document selectable and highlightable (coming soon)"
               />
             </ul>
           </div>
