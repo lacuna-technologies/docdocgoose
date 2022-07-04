@@ -37,6 +37,11 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
         }}
       >
       </Script>
+      <Script
+        id="goatcounter"
+        data-goatcounter="https://docs-together.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js">
+      </Script>
     </>
   )
 }

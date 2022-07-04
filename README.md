@@ -6,7 +6,7 @@ DocsTogether supports the following features:
 
 - [x] Removing security or encryption on documents, including restrictions on editing or highlighting, without requiring the owner password
 - [ ] Deleting one or more pages from documents
-- [ ] Rotating one mor more pages in documents
+- [ ] Rotating one or more pages in documents
 - [ ] Merging one or more PDF files
 - [x] Optimising and reducing the file size of a PDF file
 - [ ] Running optical character recognition (OCR) on a PDF file such that the text in the file becomes selectable and highlightable
