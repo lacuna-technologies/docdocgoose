@@ -48,7 +48,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
 
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
-      <Header></Header>
+      <Header />
       <div className="container max-w-screen-lg mx-auto py-8 px-4 grow">
         {fileLoaded
           ? (
@@ -78,7 +78,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
               <PdfViewer
                 file={file}
                 className="my-6"
-                pageClassName="w-full"
+                pageClassName="w-full h-96 overflow-scroll resize-y"
                 loadingComponent={
                   <div className="p-6">
                     <Spinner>Loading document...</Spinner>
@@ -160,7 +160,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
             </div>
           ) : null}
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
   )
 }

@@ -1,9 +1,22 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react'
+import React from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5'
 import type { File } from 'utils/Storage'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer'
-import type { PDFPageProxy } from 'react-pdf'
+import usePdfViewerResize from 'hooks/usePdfViewerResize'
+import usePdfViewerPage from 'hooks/usePdfViewerPage'
+import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
+
+const ZoomButton = ({ children, onClick = () => {} }) => {
+  return (
+    <div
+      className="shrink bg-slate-700 rounded-full w-9 h-9 flex justify-center items-center border border-slate-400 cursor-pointer"
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  )
+}
 
 interface Props {
   file: File,
@@ -18,28 +31,21 @@ const PdfViewer: React.FC<Props> = ({
   pageClassName = ``,
   loadingComponent,
 }) => {
-  const pageDiv = useRef(null)
-  const [scale, setScale] = useState(1)
-  const [pageWidth, setPageWidth] = useState(null)
-  const resizePage = useCallback((width: number) => {
-    if(pageDiv !== null && Number.isInteger(width)){
-      const s = pageDiv.current.clientWidth / width
-      setScale(s)
-    }
-  }, [])
-  const onPageLoad = useCallback((page: PDFPageProxy) => {
-    setPageWidth(page.originalWidth)
-    resizePage(page.originalWidth)
-  }, [resizePage])
-  const onResize = useCallback((event: Event) => {
-    resizePage(pageWidth)
-  }, [resizePage, pageWidth])
-  useEffect(() => {
-    window.addEventListener(`resize`, onResize)
-    return () => {
-      window.removeEventListener(`resize`, onResize)
-    }
-  }, [onResize])
+  const {
+    onDocumentLoad,
+  } = usePdfViewerPage()
+
+  const {
+    pageDiv,
+    onPageLoad,
+    scale,
+  } = usePdfViewerResize()
+
+  const {
+    zoom,
+    zoomIn,
+    zoomOut,
+  } = usePdfViewerZoom()
   
   return (
     <Document
@@ -47,14 +53,24 @@ const PdfViewer: React.FC<Props> = ({
       className={className}
       renderMode="svg"
       loading={loadingComponent}
+      onLoadSuccess={onDocumentLoad}
+      externalLinkTarget="_blank"
     >
       <Page
         pageNumber={1}
         className={pageClassName}
         inputRef={pageDiv}
         onLoadSuccess={onPageLoad}
-        scale={scale}
+        scale={scale * zoom}
       />
+      <div className="flex gap-3 relative mt-[-60px] ml-[calc(100%-120px)] font-black text-white text-xl">
+        <ZoomButton onClick={zoomIn}>
+          +
+        </ZoomButton>
+        <ZoomButton onClick={zoomOut}>
+          -
+        </ZoomButton>
+      </div>
     </Document>
   )
 }
