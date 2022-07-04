@@ -4,19 +4,20 @@ const usePdfViewerPage = () => {
   const [numPages, setNumPages] = useState(null as number)
   const [pageNumber, setPageNumber] = useState(1)
 
-  const onDocumentLoad = useCallback((doc) => {
-    setNumPages(doc.numPages)
-  }, [])
-
   const gotoPage = useCallback((num) => {
     setPageNumber(num)
   }, [])
+
+  const onDocumentLoad = useCallback((doc) => {
+    setNumPages(doc.numPages)
+  }, [setNumPages])
 
   return {
     gotoPage,
     numPages,
     onDocumentLoad,
     pageNumber,
+    setNumPages,
   }
 }
 
