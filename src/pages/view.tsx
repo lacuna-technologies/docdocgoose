@@ -12,6 +12,9 @@ import useDecryptPdf from 'hooks/useDecryptPdf'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
 import PdfViewer from 'components/PdfViewer'
+import useEditPdf from 'hooks/useEditPdf'
+import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
+import usePdfViewerPage from 'hooks/usePdfViewerPage'
 
 const Attribute = ({ children }) => {
   return (
@@ -45,6 +48,23 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
     decryptedResult,
   } = useDecryptPdf({ file })
 
+  const {
+    numPages,
+    pageNumber,
+    onDocumentLoad,
+    gotoPage,
+  } = usePdfViewerPage()
+
+  const {
+    rotatePage,
+    rotations,
+  } = usePdfViewerRotate({ numPages, pageNumber })
+
+  const {
+    saveFile,
+    editing,
+  } = useEditPdf({ file, rotations })
+
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header />
@@ -58,17 +78,31 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
               >
                 ◀️ Pick another file
               </SecondaryButton>
-              <h1 className="font-bold text-xl mt-6">
-                {file.path}
-              </h1>
-              <div className="flex gap-x-2">
-                <Attribute>{humanFileSize(file.size)}</Attribute>
-                {(fileInfo.pageCount && Number.isInteger(fileInfo.pageCount)) &&
-                  <Attribute>{fileInfo.pageCount} pages</Attribute>}
-                {typeof fileInfo.encrypted !== `undefined` &&
-                  <Attribute>{fileInfo.encrypted ? `Encrypted` : `Not encrypted`}</Attribute>}
-                {/* {fileInfo.permissions &&
-                  <Attribute>{fileInfo.permissions}</Attribute>} */}
+              <div className="flex items-center justify-between gap-4 mt-6">
+                <div>
+                  <h1 className="font-bold text-xl">
+                    {file.path}
+                  </h1>
+                  <div className="flex gap-x-2">
+                    <Attribute>{humanFileSize(file.size)}</Attribute>
+                    {(fileInfo.pageCount && Number.isInteger(fileInfo.pageCount)) &&
+                      <Attribute>{fileInfo.pageCount} pages</Attribute>}
+                    {typeof fileInfo.encrypted !== `undefined` &&
+                      <Attribute>{fileInfo.encrypted ? `Encrypted` : `Not encrypted`}</Attribute>}
+                    {/* {fileInfo.permissions &&
+                      <Attribute>{fileInfo.permissions}</Attribute>} */}
+                  </div>
+                </div>
+                <PrimaryButton
+                  onClick={saveFile}
+                  loadingComponent={
+                    <Spinner>Saving changes</Spinner>
+                  }
+                  loading={editing}
+                  title="Save the current version of your document"
+                >
+                  💾 Save
+                </PrimaryButton>
               </div>
               <FileInfoDetails
                 className="mt-2"
@@ -84,9 +118,15 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                   </div>
                 }
                 encrypted={fileInfo.encrypted}
+                onDocumentLoad={onDocumentLoad}
+                gotoPage={gotoPage}
+                pageNumber={pageNumber}
+                numPages={numPages}
+                rotations={rotations}
+                rotatePage={rotatePage}
               />
               <div className="mt-6">
-                <strong>EDIT DOCUMENT</strong>
+                <strong>DOCUMENT</strong>
               </div>
               <div className="grid md:grid-cols-3 grid-cols-1 mt-2 gap-4">
                 {

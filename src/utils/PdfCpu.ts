@@ -113,6 +113,20 @@ globalThis.fs.fstat = (fd, callback) => {
   })
 }
 
+globalThis.fs.lstatOriginal = globalThis.fs.lstat
+globalThis.fs.lstat = (path, callback) => {
+  return globalThis.fs.lstatOriginal(path, (err, stats) => {
+    let retStat = stats
+    delete retStat[`fileData`]
+    retStat.atimeMs = retStat.atime.getTime()
+    retStat.mtimeMs = retStat.mtime.getTime()
+    retStat.ctimeMs = retStat.ctime.getTime()
+    retStat.birthtime = retStat.ctime
+    retStat.birthtimeMs = retStat.birthtime.getTime()
+    return callback(err, retStat)
+  })
+}
+
 globalThis.fs.closeOriginal = globalThis.fs.close
 globalThis.fs.close = (fd, callback) => {
   return globalThis.fs.closeOriginal(fd, (err) => {
@@ -361,12 +375,35 @@ const decrypt = async (filePath: string, userPassword?: string) => {
   }
 }
 
+const rotate = async (filePath: string, pageNumber: number, angle: number) => {
+  const {
+    exitCode,
+    stdout,
+    stderr,
+  } = await run([
+    `rotate`,
+    `-p`,
+    `${pageNumber}`,
+    filePath,
+    `${angle}`,
+  ])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    stderr,
+    stdout,
+  }
+}
+
 const PdfCpu = {
   clearStd,
   decrypt,
   getInfo,
   go,
   optimise,
+  rotate,
   run,
   setGo,
 }

@@ -19,10 +19,7 @@ const usePdfViewerRotate = ({ pageNumber, numPages }) => {
     }
   }, [rotations, numPages])
 
-  const currentRotation = rotations[pageNumber - 1]
-
   return {
-    currentRotation,
     rotatePage,
     rotations,
     setRotations,

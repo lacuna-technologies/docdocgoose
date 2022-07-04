@@ -4,12 +4,10 @@ import type { File } from 'utils/Storage'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer'
 import usePdfViewerResize from 'hooks/usePdfViewerResize'
-import usePdfViewerPage from 'hooks/usePdfViewerPage'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { InfoAdmonition } from 'components/admonition'
 import { PrimaryButton } from 'components/button'
-import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
-
+import type { DocumentProps } from 'react-pdf'
 
 const ZoomButton = ({ children, onClick = () => {} }) => {
   return (
@@ -43,6 +41,12 @@ interface Props {
   pageClassName?: string,
   loadingComponent?: React.ReactElement,
   encrypted: boolean,
+  onDocumentLoad: DocumentProps[`onLoadSuccess`],
+  pageNumber: number,
+  numPages: number,
+  gotoPage: (p: number) => void,
+  rotations: number[],
+  rotatePage: () => void,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -51,13 +55,13 @@ const PdfViewer: React.FC<Props> = ({
   pageClassName = ``,
   loadingComponent,
   encrypted,
+  onDocumentLoad,
+  pageNumber = 1,
+  numPages = 0,
+  gotoPage,
+  rotations = [],
+  rotatePage,
 }) => {
-  const {
-    numPages,
-    pageNumber,
-    onDocumentLoad,
-    gotoPage,
-  } = usePdfViewerPage()
 
   const {
     pageDiv,
@@ -71,11 +75,7 @@ const PdfViewer: React.FC<Props> = ({
     zoomOut,
   } = usePdfViewerZoom()
 
-  const {
-    rotatePage,
-    currentRotation,
-    rotations,
-  } = usePdfViewerRotate({ numPages, pageNumber })
+  const currentRotation = rotations[pageNumber - 1]
 
   return (
     <>
@@ -98,7 +98,7 @@ const PdfViewer: React.FC<Props> = ({
         <div className="flex justify-between items-center mt-2 gap-4">
           <div className="flex gap-1 overflow-auto">
             {
-              Number.isInteger(numPages) && (
+              (Number.isInteger(numPages) && numPages > 0) && (
                 Array.from({ length: numPages }, (v, i) => i + 1).map((pageNumber) => (
                   <MiniPage
                     key={`mini-page-${pageNumber}`}
@@ -135,7 +135,7 @@ const PdfViewer: React.FC<Props> = ({
           ) : (
             <>
               <div className="mt-6">
-                <strong>EDIT PAGE</strong>
+                <strong>PAGE</strong>
               </div>
               <div className="grid md:grid-cols-2 grid-cols-1 mt-2 gap-4">
                 <PrimaryButton onClick={rotatePage}>
