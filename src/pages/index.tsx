@@ -38,6 +38,10 @@ const Home: NextPage = () => {
                 content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting"
               />
               <Feature
+                title="Edit"
+                content="Add text, images, and other content to your documents (coming soon)"
+              />
+              <Feature
                 title="Organise"
                 content="Rearrange, delete, or rotate pages, or merge documents (coming soon)"
               />
@@ -56,13 +60,9 @@ const Home: NextPage = () => {
               <Spinner>Loading...</Spinner>
             </div>
           ) : (
-            <DropZone
-              onDrop={onDrop}
-            />
+            <DropZone onDrop={onDrop} />
           )}
-          
         </div>
-        
       </div>
       <Footer></Footer>
     </div>

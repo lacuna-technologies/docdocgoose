@@ -14,3 +14,7 @@ WebAssembly.instantiate(wasmBuffer, go.importObject).then(wasmModule => {
 // https://dev.to/wcchoi/browser-side-pdf-processing-with-go-and-webassembly-13hn
 // https://github.com/golang/go/wiki/WebAssembly#executing-webassembly-with-node-js=
 // https://github.com/filerjs/filer/tree/master/src
+
+// https://pdf-lib.js.org/
+// https://github.com/naptha/tesseract.js
+// https://github.com/bokuweb/react-rnd

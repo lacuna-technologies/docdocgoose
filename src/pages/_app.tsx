@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app'
 import Script from 'next/script'
+import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import PdfCpu from 'utils/PdfCpu'
 
@@ -16,6 +17,9 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
+    <Head>
+      <title>📄 DocsTogether</title>
+    </Head>
       <Component {
         ...{
           ...pageProps,
