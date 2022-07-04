@@ -49,7 +49,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header></Header>
-      <div className="container max-w-screen-lg mx-auto py-8 grow">
+      <div className="container max-w-screen-lg mx-auto py-8 px-4 grow">
         {fileLoaded
           ? (
             <div>
@@ -79,6 +79,11 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                 file={file}
                 className="my-6"
                 pageClassName="w-full"
+                loadingComponent={
+                  <div className="p-6">
+                    <Spinner>Loading document...</Spinner>
+                  </div>
+                }
               />
               { fileInfo.encrypted === true && (
                 <InfoAdmonition className="my-4">
@@ -86,7 +91,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                   <p>There are restrictions on this document that must be removed before the document can be edited.</p>
                 </InfoAdmonition>
               ) }
-              <div className="grid grid-cols-3 mt-6 gap-4">
+              <div className="grid md:grid-cols-3 grid-cols-1 mt-6 gap-4">
                 {
                   optimisedResult === null ? (
                     <PrimaryButton

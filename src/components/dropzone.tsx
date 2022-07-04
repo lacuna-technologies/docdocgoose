@@ -26,8 +26,13 @@ const DropZone: React.FC<Props> = ({ onDrop }) => {
         )
         : (
           <>
-            <p>Drag and drop your file here </p>
-            <p className="text-sm">(or click to select a file from your computer)</p>
+            <div className="md:block hidden">
+              <p>Drag and drop your file here</p>
+              <p className="text-sm">(or click to select a file from your computer)</p>
+            </div>
+            <div className="md:hidden block">
+              <p>Tap here to select a file</p>
+            </div>
           </>
         )
       }

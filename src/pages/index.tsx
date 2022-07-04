@@ -28,8 +28,8 @@ const Home: NextPage = () => {
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header></Header>
-      <div className="container max-w-screen-lg mx-auto py-8 grow">
-        <div className="flex flex-row">
+      <div className="container max-w-screen-lg mx-auto py-8 px-4 grow">
+        <div className="flex md:flex-row flex-col">
           <div className="basis-2/3">
             <h2 className="text-3xl font-bold">Edit PDFs,<br />directly in your browser</h2>
             <ul className="mt-6">

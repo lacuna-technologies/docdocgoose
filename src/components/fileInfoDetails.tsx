@@ -14,7 +14,7 @@ const FileInfoDetails = (
       <a className="cursor-pointer" onClick={toggleExpanded}>
         <small>({expanded ? `hide` : `show`} more details)</small>
       </a>
-      <pre className={`mt-2 text-sm ${expanded ? `` : `hidden`}`}>
+      <pre className={`mt-2 text-sm overflow-x-scroll ${expanded ? `` : `hidden`}`}>
         {JSON.stringify(fileInfo, null, 2)}
       </pre>
     </div>

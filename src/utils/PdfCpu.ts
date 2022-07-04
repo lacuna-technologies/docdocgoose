@@ -204,7 +204,6 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
     .filter((line) => !line.match(/\.{10,}/))
     .reduce((acc, line, index, array) => {
       const parts = line.split(/:(?=\s|$)/).map(v => v.trim())
-      console.log(parts)
       if(parts[0] === `Permissions`){
         const result = [
           ...acc,
@@ -224,7 +223,6 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
         return [...acc, parts]
       }
     }, [])
-  console.log(values)
 
   for(const value of values){
     const [label, data] = value

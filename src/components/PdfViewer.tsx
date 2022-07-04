@@ -1,20 +1,22 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5'
 import type { File } from 'utils/Storage'
-
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer'
+import type { PDFPageProxy } from 'react-pdf'
 
 interface Props {
   file: File,
   className?: string,
   pageClassName?: string,
+  loadingComponent?: React.ReactElement,
 }
 
 const PdfViewer: React.FC<Props> = ({
   file,
   className = ``,
   pageClassName = ``,
+  loadingComponent,
 }) => {
   const pageDiv = useRef(null)
   const [scale, setScale] = useState(1)
@@ -22,17 +24,14 @@ const PdfViewer: React.FC<Props> = ({
   const resizePage = useCallback((width: number) => {
     if(pageDiv !== null && Number.isInteger(width)){
       const s = pageDiv.current.clientWidth / width
-      console.log(`width`, width)
-      console.log(`clientWidth`, pageDiv.current.clientWidth)
-      console.log(`scale`, s)
       setScale(s)
     }
   }, [])
-  const onPageLoad = useCallback((page) => {
+  const onPageLoad = useCallback((page: PDFPageProxy) => {
     setPageWidth(page.originalWidth)
     resizePage(page.originalWidth)
   }, [resizePage])
-  const onResize = useCallback((event?: Event) => {
+  const onResize = useCallback((event: Event) => {
     resizePage(pageWidth)
   }, [resizePage, pageWidth])
   useEffect(() => {
@@ -43,7 +42,12 @@ const PdfViewer: React.FC<Props> = ({
   }, [onResize])
   
   return (
-    <Document file={file} className={className} renderMode="svg">
+    <Document
+      file={file}
+      className={className}
+      renderMode="svg"
+      loading={loadingComponent}
+    >
       <Page
         pageNumber={1}
         className={pageClassName}
