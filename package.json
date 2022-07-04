@@ -23,6 +23,7 @@
     "@types/node": "^17.0.41",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
+    "@types/react-pdf": "^5.7.2",
     "autoprefixer": "^10.4.7",
     "enquirer": "^2.3.6",
     "eslint": "^8.17.0",

@@ -11,6 +11,8 @@ import useOptimisePdf from 'hooks/useOptimisePdf'
 import useDecryptPdf from 'hooks/useDecryptPdf'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
+import { InfoAdmonition } from 'components/admonition'
+import PdfViewer from 'components/PdfViewer'
 
 const Attribute = ({ children }) => {
   return (
@@ -73,6 +75,17 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                 className="mt-2"
                 fileInfo={fileInfo}
               />
+              <PdfViewer
+                file={file}
+                className="my-6"
+                pageClassName="w-full"
+              />
+              { fileInfo.encrypted === true && (
+                <InfoAdmonition className="my-4">
+                  <strong>🔒 Restrictions</strong>
+                  <p>There are restrictions on this document that must be removed before the document can be edited.</p>
+                </InfoAdmonition>
+              ) }
               <div className="grid grid-cols-3 mt-6 gap-4">
                 {
                   optimisedResult === null ? (
@@ -84,6 +97,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                           <Spinner>Optimising...</Spinner>
                         </>
                       }
+                      title="Reduce the size of your document"
                     >
                       🪄 Optimise
                     </PrimaryButton>
@@ -115,6 +129,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                           <Spinner>Decrypting...</Spinner>
                         </>
                       }
+                      title="Remove edit restrictions"
                     >
                       🔓 Remove restrictions
                     </PrimaryButton>

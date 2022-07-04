@@ -9,9 +9,10 @@ interface Props {
   loadingComponent?: React.ReactElement,
   download?: string,
   className?: string,
+  title?: string,
 }
 
-const buttonClasses = `font-light rounded px-4 py-2 no-underline border border-slate-400 hover:border-slate-500 h-full flex items-center justify-center text-center`
+const buttonClasses = `font-light rounded px-4 py-2 no-underline border border-slate-400 hover:border-slate-500 h-full flex items-center justify-center text-center select-none`
 
 export const PrimaryButton: React.FC<Props> = ({
   children,
@@ -21,12 +22,13 @@ export const PrimaryButton: React.FC<Props> = ({
   loadingComponent,
   download,
   className = ``,
+  title = ``,
 }) => {
   const loadingContent = loadingComponent ? loadingComponent : <span>Loading...</span>
   const innerContent = loading ? loadingContent : children
   const cursorClass = loading ? `cursor-not-allowed` : `cursor-pointer`
   const content = (
-    <div className={`${buttonClasses} bg-slate-100 ${cursorClass} ${className}`}>
+    <div className={`${buttonClasses} bg-slate-100 ${cursorClass} ${className}`} title={title}>
       {innerContent}
     </div>
   )
@@ -58,12 +60,13 @@ export const SecondaryButton: React.FC<Props> = ({
   loadingComponent,
   download,
   className,
+  title = ``,
 }) => {
   const loadingContent = loadingComponent ? loadingComponent : <span>Loading...</span>
   const innerContent = loading ? loadingContent : children
   const cursorClass = loading ? `cursor-not-allowed` : `cursor-pointer`
   const content = (
-    <div className={`${buttonClasses} bg-slate-200 ${cursorClass} ${className}`}>
+    <div className={`${buttonClasses} bg-slate-200 ${cursorClass} ${className}`} title={title}>
       {innerContent}
     </div>
   )

@@ -14,7 +14,7 @@ html {
     @apply decoration-solid;
   }
   ::selection {
-    @apply bg-slate-800/[.15];
+    @apply bg-slate-800/[.1];
   }
 }
 
