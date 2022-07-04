@@ -8,8 +8,8 @@ const usePdfViewerPage = () => {
     setNumPages(doc.numPages)
   }, [])
 
-  const gotoPage = useCallback((pageNumber) => {
-    setPageNumber(pageNumber)
+  const gotoPage = useCallback((num) => {
+    setPageNumber(num)
   }, [])
 
   return {

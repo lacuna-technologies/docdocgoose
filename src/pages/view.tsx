@@ -78,7 +78,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
               <PdfViewer
                 file={file}
                 className="my-6"
-                pageClassName="w-full h-96 overflow-scroll resize-y"
+                pageClassName="h-96 overflow-auto resize-y"
                 loadingComponent={
                   <div className="p-6">
                     <Spinner>Loading document...</Spinner>
