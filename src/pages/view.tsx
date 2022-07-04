@@ -1,5 +1,6 @@
 /* page that shows after file is selected */
 import React from 'react'
+import dynamic from 'next/dynamic'
 import Header from 'components/header'
 import Footer from 'components/footer'
 import { PrimaryButton, SecondaryButton } from 'components/button'
@@ -11,10 +12,11 @@ import useOptimisePdf from 'hooks/useOptimisePdf'
 import useDecryptPdf from 'hooks/useDecryptPdf'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
-import PdfViewer from 'components/PdfViewer'
 import useEditPdf from 'hooks/useEditPdf'
 import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
 import usePdfViewerPage from 'hooks/usePdfViewerPage'
+
+const PdfViewer = dynamic(() => import(`components/PdfViewer`), { ssr: false })
 
 const Attribute = ({ children }) => {
   return (
