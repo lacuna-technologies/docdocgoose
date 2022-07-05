@@ -74,6 +74,7 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
     documentWidth,
     getPageHeight,
     onDocumentLoad,
+    pageHeights,
     scale,
     setPageHeight,
     setPageWidth,

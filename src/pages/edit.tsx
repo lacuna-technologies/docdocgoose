@@ -32,7 +32,7 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
     numPages,
     pageNumber,
     onDocumentLoad,
-    gotoPage,
+    setCurrentPage,
   } = usePdfViewerPage()
 
   const {
@@ -83,7 +83,7 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
             </div>
           }
           onDocumentLoad={onDocumentLoad}
-          gotoPage={gotoPage}
+          setCurrentPage={setCurrentPage}
           pageNumber={pageNumber}
           numPages={numPages}
           rotatePage={rotatePage}

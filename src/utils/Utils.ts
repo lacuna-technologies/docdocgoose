@@ -22,3 +22,16 @@ export const truncateFilename = (fileName: string, maxLength: number = 50) => {
   }
   return fileName
 }
+
+export const debounce = (fn: Function, delay: number = 250) => {
+  let timer
+  return (...args) => {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    setTimeout(() => {
+      fn(...args)
+      timer = null
+    }, delay)
+  }
+}

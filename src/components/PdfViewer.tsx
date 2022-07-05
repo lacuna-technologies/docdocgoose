@@ -7,6 +7,7 @@ import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { PrimaryButton, SecondaryButton } from 'components/button'
 import type { DocumentProps, PDFPageProxy } from 'react-pdf'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
 
 const ZoomButton = ({ children, onClick = () => {} }) => {
   return (
@@ -19,7 +20,7 @@ const ZoomButton = ({ children, onClick = () => {} }) => {
   )
 }
 
-const MainPage = ({ pageNumber, scale, zoom, getRotation, setPageHeight, setPageWidth }) => {
+const MainPage = ({ pageNumber, scale, getRotation, setPageHeight, setPageWidth }) => {
   const onLoadSuccess = useCallback((page: PDFPageProxy) => {
     setPageHeight(pageNumber, page.originalHeight)
     setPageWidth(pageNumber, page.originalWidth)
@@ -27,17 +28,17 @@ const MainPage = ({ pageNumber, scale, zoom, getRotation, setPageHeight, setPage
   return (
     <Page
       pageNumber={pageNumber}
-      scale={scale * zoom}
+      scale={scale}
       rotate={getRotation(pageNumber)}
       onLoadSuccess={onLoadSuccess}
     />
   )
 }
 
-const MiniPage = ({ pageNumber, gotoPage, rotation, current }) => {
+const MiniPage = ({ pageNumber, setCurrentPage, rotation, current }) => {
   const onClick = useCallback(() => {
-    gotoPage(pageNumber)
-  }, [pageNumber, gotoPage])
+    setCurrentPage(pageNumber)
+  }, [pageNumber, setCurrentPage])
   const currentClass = current ? `bg-slate-300` : ``
 
   return (
@@ -61,7 +62,7 @@ interface Props {
   onDocumentLoad: DocumentProps[`onLoadSuccess`],
   pageNumber: number,
   numPages: number,
-  gotoPage: (p: number) => void,
+  setCurrentPage: (p: number) => void,
   rotatePage: (n: number) => void,
   getRotation: (n: number) => number
 }
@@ -72,7 +73,7 @@ const PdfViewer: React.FC<Props> = ({
   onDocumentLoad,
   pageNumber = 1,
   numPages = 0,
-  gotoPage,
+  setCurrentPage,
   getRotation,
   rotatePage,
 }) => {
@@ -82,6 +83,7 @@ const PdfViewer: React.FC<Props> = ({
     onDocumentLoad: runInitialResize,
     setPageHeight,
     setPageWidth,
+    pageHeights,
   } = usePdfViewerResize({ pageNumber })
 
   const {
@@ -98,6 +100,10 @@ const PdfViewer: React.FC<Props> = ({
     onDocumentLoad(pdf)
     runInitialResize(pdf)
   }, [onDocumentLoad, runInitialResize])
+
+  const computedScale = scale * zoom
+
+  // usePdfViewerScroll({ documentRef, pageHeights, pageNumber, setCurrentPage })
 
   return (
     <div className="flex max-h-full overflow-hidden select-none">
@@ -131,10 +137,9 @@ const PdfViewer: React.FC<Props> = ({
                   {...{
                     getRotation,
                     pageNumber: num,
-                    scale,
+                    scale: computedScale,
                     setPageHeight,
                     setPageWidth,
-                    zoom,
                   }}
                 />
               ))
@@ -169,7 +174,7 @@ const PdfViewer: React.FC<Props> = ({
                 key={`mini-page-${num}`}
                 current={pageNumber === num}
                 pageNumber={num}
-                gotoPage={gotoPage}
+                setCurrentPage={setCurrentPage}
                 rotation={getRotation(pageNumber)}
               />
             ))
