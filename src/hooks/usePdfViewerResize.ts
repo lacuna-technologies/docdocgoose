@@ -19,7 +19,6 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
 
   const setDocumentSize = useCallback(() => {
     if(documentRef !== null){
-      console.log(`setting document size`, documentRef.current.clientHeight, documentRef.current.clientWidth)
       setDocumentHeight(documentRef.current.clientHeight)
       setDocumentWidth(documentRef.current.clientWidth)
     }
@@ -40,24 +39,27 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
       width,
       ...arr.slice(pageNumber),
     ]))
-    setDocumentSize()
-  }, [setDocumentSize])
+  }, [])
 
   const resizePage = useCallback(() => {
     const s = documentWidth / getPageWidth(pageNumber)
     setScale(s)
   }, [documentWidth, pageNumber, getPageWidth])
 
+  const onResize = useCallback(() => {
+    setDocumentSize()
+    resizePage()
+  }, [setDocumentSize, resizePage])
+
   const onDocumentLoad = useCallback((pdf: PDFDocumentProxy) => {
     setPageHeights(Array.from({ length: pdf.numPages }, () => 500))
     setPageWidths(Array.from({ length: pdf.numPages }, () => 500))
-    // window.resizeBy(0, 0) // trigger the resize event
-  }, [])
+    onResize()
+  }, [onResize])
 
-  const onResize = useCallback((event: Event) => {
-    setDocumentSize()
-    // resizePage()
-  }, [setDocumentSize])
+  useEffect(() => {
+    resizePage()
+  }, [documentWidth, resizePage])
   
   useEffect(() => {
     window.addEventListener(`resize`, onResize)
@@ -65,8 +67,6 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
       window.removeEventListener(`resize`, onResize)
     }
   }, [onResize])
-
-  console.log(documentHeight, documentWidth, pageWidths, pageHeights)
 
   return {
     documentHeight,

@@ -38,6 +38,7 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
   const {
     rotatePage,
     rotations,
+    getRotation,
   } = usePdfViewerRotate({ numPages })
 
   const {
@@ -85,8 +86,8 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
           gotoPage={gotoPage}
           pageNumber={pageNumber}
           numPages={numPages}
-          rotations={rotations}
           rotatePage={rotatePage}
+          getRotation={getRotation}
         />
       </div>
     </>

@@ -6,7 +6,6 @@ import usePdfViewerResize from 'hooks/usePdfViewerResize'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { PrimaryButton, SecondaryButton } from 'components/button'
 import type { DocumentProps, PDFPageProxy } from 'react-pdf'
-import { VariableSizeList } from 'react-window'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 
 const ZoomButton = ({ children, onClick = () => {} }) => {
@@ -20,23 +19,7 @@ const ZoomButton = ({ children, onClick = () => {} }) => {
   )
 }
 
-const MainPageRenderer = ({ data: { scale, zoom, rotations, setPageHeight, setPageWidth }, index, style }) => {
-  const pageNumber = index + 1
-  return (
-    <div style={style}>
-      <MainPage
-        pageNumber={pageNumber}
-        scale={scale}
-        zoom={zoom}
-        rotations={rotations}
-        setPageHeight={setPageHeight}
-        setPageWidth={setPageWidth}
-      />
-    </div>
-  )
-}
-
-const MainPage = ({ pageNumber, scale, zoom, rotations, setPageHeight, setPageWidth }) => {
+const MainPage = ({ pageNumber, scale, zoom, getRotation, setPageHeight, setPageWidth }) => {
   const onLoadSuccess = useCallback((page: PDFPageProxy) => {
     setPageHeight(pageNumber, page.originalHeight)
     setPageWidth(pageNumber, page.originalWidth)
@@ -45,7 +28,7 @@ const MainPage = ({ pageNumber, scale, zoom, rotations, setPageHeight, setPageWi
     <Page
       pageNumber={pageNumber}
       scale={scale * zoom}
-      rotate={rotations[pageNumber - 1]}
+      rotate={getRotation(pageNumber)}
       onLoadSuccess={onLoadSuccess}
     />
   )
@@ -79,8 +62,8 @@ interface Props {
   pageNumber: number,
   numPages: number,
   gotoPage: (p: number) => void,
-  rotations: number[],
   rotatePage: (n: number) => void,
+  getRotation: (n: number) => number
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -90,17 +73,14 @@ const PdfViewer: React.FC<Props> = ({
   pageNumber = 1,
   numPages = 0,
   gotoPage,
-  rotations = [],
+  getRotation,
   rotatePage,
 }) => {
   const {
     scale,
     documentRef,
-    documentHeight,
-    documentWidth,
     onDocumentLoad: runInitialResize,
     setPageHeight,
-    getPageHeight,
     setPageWidth,
   } = usePdfViewerResize({ pageNumber })
 
@@ -113,10 +93,6 @@ const PdfViewer: React.FC<Props> = ({
   const onClickRotate = useCallback(() => {
     rotatePage(pageNumber)
   }, [pageNumber, rotatePage])
-
-  const getItemSize = useCallback((index) => {
-    getPageHeight(index + 1)
-  }, [getPageHeight])
 
   const onDocumentLoadSuccess = useCallback((pdf: PDFDocumentProxy) => {
     onDocumentLoad(pdf)
@@ -149,21 +125,19 @@ const PdfViewer: React.FC<Props> = ({
         >
           {
             (Number.isInteger(numPages) && numPages > 0) && (
-              <VariableSizeList
-                itemData={{
-                  rotations,
-                  scale,
-                  setPageHeight,
-                  setPageWidth,
-                  zoom,
-                }}
-                itemCount={numPages}
-                height={documentHeight}
-                width={documentWidth}
-                itemSize={getItemSize}
-              >
-                {MainPageRenderer}
-              </VariableSizeList>
+              Array.from({ length: numPages }, (v, i) => i + 1).map((num) => (
+                <MainPage
+                  key={`main-page-${num}`}
+                  {...{
+                    getRotation,
+                    pageNumber: num,
+                    scale,
+                    setPageHeight,
+                    setPageWidth,
+                    zoom,
+                  }}
+                />
+              ))
             )
           }
         </Document>
@@ -186,7 +160,7 @@ const PdfViewer: React.FC<Props> = ({
       </div>
       <Document
         file={file}
-        className="flex flex-none flex-col gap-1 overflow-auto"
+        className="flex flex-none flex-col gap-1 overflow-auto ml-4"
       >
         {
           (Number.isInteger(numPages) && numPages > 0) && (
@@ -196,7 +170,7 @@ const PdfViewer: React.FC<Props> = ({
                 current={pageNumber === num}
                 pageNumber={num}
                 gotoPage={gotoPage}
-                rotation={rotations[num - 1]}
+                rotation={getRotation(pageNumber)}
               />
             ))
           )
