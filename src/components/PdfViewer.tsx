@@ -1,12 +1,10 @@
 import React, { useCallback } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5'
-import type { File } from 'utils/Storage'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer'
 import usePdfViewerResize from 'hooks/usePdfViewerResize'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
-import { InfoAdmonition } from 'components/admonition'
-import { PrimaryButton } from 'components/button'
+import { PrimaryButton, SecondaryButton } from 'components/button'
 import type { DocumentProps } from 'react-pdf'
 
 const ZoomButton = ({ children, onClick = () => {} }) => {
@@ -40,7 +38,6 @@ interface Props {
   className?: string,
   pageClassName?: string,
   loadingComponent?: React.ReactElement,
-  encrypted: boolean,
   onDocumentLoad: DocumentProps[`onLoadSuccess`],
   pageNumber: number,
   numPages: number,
@@ -54,7 +51,6 @@ const PdfViewer: React.FC<Props> = ({
   className = ``,
   pageClassName = ``,
   loadingComponent,
-  encrypted,
   onDocumentLoad,
   pageNumber = 1,
   numPages = 0,
@@ -78,77 +74,72 @@ const PdfViewer: React.FC<Props> = ({
   const currentRotation = rotations[pageNumber - 1]
 
   return (
-    <>
-      <Document
-        file={file}
-        className={className}
-        renderMode="svg"
-        loading={loadingComponent}
-        onLoadSuccess={onDocumentLoad}
-        externalLinkTarget="_blank"
-      >
-        <Page
-          pageNumber={pageNumber}
-          className={pageClassName}
-          inputRef={pageDiv}
-          onLoadSuccess={onPageLoad}
-          scale={scale * zoom}
-          rotate={currentRotation}
-        />
-        <div className="flex justify-between items-center mt-2 gap-4">
-          <div className="flex gap-1 overflow-auto">
-            {
-              (Number.isInteger(numPages) && numPages > 0) && (
-                Array.from({ length: numPages }, (v, i) => i + 1).map((pageNumber) => (
-                  <MiniPage
-                    key={`mini-page-${pageNumber}`}
-                    pageNumber={pageNumber}
-                    gotoPage={gotoPage}
-                    rotation={rotations[pageNumber - 1]}
-                  />
-                ))
-              )
-            }
+    <div className="flex gap-4 max-h-full overflow-hidden select-none">
+      <div className="flex flex-col flex-none">
+        <div className="mt-6">
+          <strong>PAGE</strong>
+        </div>
+        <div className="grid md:grid-cols-2 grid-cols-1 mt-2 gap-4">
+          <PrimaryButton onClick={rotatePage}>
+            ↗️ Rotate
+          </PrimaryButton>
+          <PrimaryButton>
+            🗑️ Delete
+          </PrimaryButton>
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 max-w-full overflow-hidden grow">
+        <Document
+          file={file}
+          className="grow overflow-auto max-w-full"
+          renderMode="svg"
+          loading={loadingComponent}
+          onLoadSuccess={onDocumentLoad}
+          externalLinkTarget="_blank"
+        >
+          <Page
+            pageNumber={pageNumber}
+            inputRef={pageDiv}
+            onLoadSuccess={onPageLoad}
+            scale={scale * zoom}
+            rotate={currentRotation}
+          />
+        </Document>
+        <div className="flex justify-between items-center gap-4">
+          <SecondaryButton>
+            ℹ️ Info
+          </SecondaryButton>
+          <div>
+            {pageNumber} / {numPages}
           </div>
-          <div className="flex flex-col justify-around gap-4 items-center">
-            <div>
-              {pageNumber} / {numPages}
-            </div>
-            <div className="flex gap-3 font-black text-white text-xl">
-              <ZoomButton onClick={zoomIn}>
-                +
-              </ZoomButton>
-              <ZoomButton onClick={zoomOut}>
-                -
-              </ZoomButton>
-            </div>
+          <div className="flex gap-3 font-black text-white text-xl">
+            <ZoomButton onClick={zoomIn}>
+              +
+            </ZoomButton>
+            <ZoomButton onClick={zoomOut}>
+              -
+            </ZoomButton>
           </div>
         </div>
-      </Document>
-      {
-        encrypted === true
-          ? (
-            <InfoAdmonition className="my-4">
-              <strong>🔒 Restrictions</strong>
-              <p>There are restrictions on this document that must be removed before the document can be edited.</p>
-            </InfoAdmonition>
-          ) : (
-            <>
-              <div className="mt-6">
-                <strong>PAGE</strong>
-              </div>
-              <div className="grid md:grid-cols-2 grid-cols-1 mt-2 gap-4">
-                <PrimaryButton onClick={rotatePage}>
-                  ↗️ Rotate
-                </PrimaryButton>
-                <PrimaryButton>
-                  🗑️ Delete
-                </PrimaryButton>
-              </div>
-            </>
+      </div>
+      <Document
+        file={file}
+        className="flex flex-none flex-col gap-1 overflow-auto"
+      >
+        {
+          (Number.isInteger(numPages) && numPages > 0) && (
+            Array.from({ length: numPages }, (v, i) => i + 1).map((pageNumber) => (
+              <MiniPage
+                key={`mini-page-${pageNumber}`}
+                pageNumber={pageNumber}
+                gotoPage={gotoPage}
+                rotation={rotations[pageNumber - 1]}
+              />
+            ))
           )
-      }
-    </>
+        }
+      </Document>
+    </div>
   )
 }
 

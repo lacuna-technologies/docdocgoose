@@ -15,3 +15,10 @@ export const downloadBlob = (blob: Blob, fileName) => {
   link.click()
   link.remove()
 }
+
+export const truncateFilename = (fileName: string, maxLength: number = 50) => {
+  if(fileName.length > maxLength){
+    return fileName.slice(0, 49) + `…`
+  }
+  return fileName
+}
