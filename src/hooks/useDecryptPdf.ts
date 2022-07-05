@@ -1,33 +1,37 @@
 import { useCallback, useState } from "react"
 import PdfCpu from 'utils/PdfCpu'
-import type { File } from 'utils/Storage'
+import Storage from 'utils/Storage'
 
 interface DecryptedResult {
   url: string,
   fileName: string,
 }
 
-const useDecryptPdf = ({ file }: { file: File }) => {
+const useDecryptPdf = ({ file, reloadFile }: { file: File, reloadFile: () => void }) => {
   const [decrypting, setDecrypting] = useState(false)
   const [decryptedResult, setDecryptedResult] = useState(null as DecryptedResult)
   const decryptPdf = useCallback(async () => {
     setDecrypting(true)
     const arrayBuffer = await file.arrayBuffer()
-    globalThis.fs.writeFileSync(`/${file.path}`, Buffer.from(arrayBuffer))
+    const filePath = `/${file.name}`
+    globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
-      const { outPath } = await PdfCpu.decrypt(`/${file.path}`)
-      const outBuffer = globalThis.fs.readFileSync(outPath)
+      await PdfCpu.decrypt(filePath)
+      const outBuffer = globalThis.fs.readFileSync(filePath)
       const blob = new Blob([outBuffer])
+      const f = new File([outBuffer], file.name)
+      Storage.setFile(f)
       setDecryptedResult({
-        fileName: outPath.slice(1),
+        fileName: file.name,
         url: URL.createObjectURL(blob),
       })
+      reloadFile()
     } catch (error) {
       console.error(error)
     } finally {
       setDecrypting(false)
     }
-  }, [file])
+  }, [file, reloadFile])
 
   return {
     decryptPdf,

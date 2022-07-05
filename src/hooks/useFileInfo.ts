@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import type { FileInfo } from 'utils/PdfCpu'
 import PdfCpu from 'utils/PdfCpu'
 
-const useFileInfo = ({ file, wasmLoaded }) => {
+const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) => {
   const router = useRouter()
 
   const [fileLoaded, setFileLoaded] = useState(false)
@@ -23,12 +23,13 @@ const useFileInfo = ({ file, wasmLoaded }) => {
     }
     (async () => {
       const arrayBuffer = await file.arrayBuffer()
-      globalThis.fs.writeFile(`/${file.path}`, Buffer.from(arrayBuffer), async (err: any) => {
+      const filePath = `/${file.name}`
+      globalThis.fs.writeFile(filePath, Buffer.from(arrayBuffer), async (err: any) => {
         if(err){
           throw err
         }
         try {
-          const result = await PdfCpu.getInfo(`/${file.path}`)
+          const result = await PdfCpu.getInfo(filePath)
           setFileInfo(result)
         } catch (error){
           if(error.message === `File is encrypted`){
@@ -44,12 +45,20 @@ const useFileInfo = ({ file, wasmLoaded }) => {
         }
       })
     })()
+
   }, [router, file, fileLoaded, wasmLoaded])
+
+  const reloadFile = useCallback(() => {
+    setFileLoaded(false)
+    setFileInfo({})
+    setError(null)
+  }, [])
 
   return {
     error,
     fileInfo,
     fileLoaded,
+    reloadFile,
   }
 }
 

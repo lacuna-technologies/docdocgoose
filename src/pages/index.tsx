@@ -19,13 +19,13 @@ const Feature = ({ title, content }) => {
 const Home: NextPage = () => {
   const router = useRouter()
   const [dropped, setDropped] = useState(false)
-  const onDrop = useCallback((files) => {
-    if(files.length !== 1){
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if(acceptedFiles.length !== 1){
       window.alert(`Please select only one PDF file`)
       return
     }
     setDropped(true)
-    Storage.setFile(files[0])
+    Storage.setFile(acceptedFiles[0])
     router.push(`/view`)
   }, [router])
   

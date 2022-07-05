@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import PdfCpu from 'utils/PdfCpu'
-import type { File } from 'utils/Storage'
+import Storage from "utils/Storage"
 
 interface OptimisedResult {
   size: number,
@@ -14,11 +14,14 @@ const useOptimisePdf = ({ file }: { file: File }) => {
   const optimisePdf = useCallback(async () => {
     setOptimising(true)
     const arrayBuffer = await file.arrayBuffer()
-    globalThis.fs.writeFileSync(`/${file.path}`, Buffer.from(arrayBuffer))
+    const filePath = `/${file.name}`
+    globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
-      const { outPath } = await PdfCpu.optimise(`/${file.path}`)
+      const { outPath } = await PdfCpu.optimise(filePath)
       const outBuffer = globalThis.fs.readFileSync(outPath)
       const blob = new Blob([outBuffer])
+      const f = new File([outBuffer], file.name)
+      Storage.setFile(f)
       setOptimisedResult({
         fileName: outPath.slice(1),
         size: blob.size,

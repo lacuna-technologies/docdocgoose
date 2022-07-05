@@ -1,17 +1,21 @@
+/* page that shows after unrestricted file is selected */
 /* page that shows after restricted file is selected */
-import React, { useEffect } from 'react'
+import React from 'react'
+import dynamic from 'next/dynamic'
 import Header from 'components/header'
 import Footer from 'components/footer'
-import { SecondaryButton } from 'components/button'
+import { PrimaryButton, SecondaryButton } from 'components/button'
 import Storage from 'utils/Storage'
 import type { NextPage } from 'next'
 import { humanFileSize } from 'utils/Utils'
 import useFileInfo from 'hooks/useFileInfo'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
-import { InfoAdmonition } from 'components/admonition'
-import { useRouter } from 'next/router'
-import DecryptButton from 'components/view/decryptButton'
+import useEditPdf from 'hooks/useEditPdf'
+import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
+import usePdfViewerPage from 'hooks/usePdfViewerPage'
+
+const PdfViewer = dynamic(() => import(`components/PdfViewer`), { ssr: false })
 
 const Attribute = ({ children }) => {
   return (
@@ -26,20 +30,29 @@ interface Props {
 }
 
 const View: NextPage<Props> = ({ wasmLoaded }) => {
-  const router = useRouter()
   const file = Storage.getFile()
   const {
     fileLoaded,
     error,
     fileInfo,
-    reloadFile,
   } = useFileInfo({ file, wasmLoaded })
 
-  useEffect(() => {
-    if(fileInfo.encrypted === false){
-      router.replace(`/edit`)
-    }
-  }, [fileInfo, router])
+  const {
+    numPages,
+    pageNumber,
+    onDocumentLoad,
+    gotoPage,
+  } = usePdfViewerPage()
+
+  const {
+    rotatePage,
+    rotations,
+  } = usePdfViewerRotate({ numPages, pageNumber })
+
+  const {
+    saveFile,
+    editing,
+  } = useEditPdf({ file, rotations })
 
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
@@ -69,28 +82,38 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                       <Attribute>{fileInfo.permissions}</Attribute>} */}
                   </div>
                 </div>
+                <PrimaryButton
+                  onClick={saveFile}
+                  loadingComponent={
+                    <Spinner>Saving changes</Spinner>
+                  }
+                  loading={editing}
+                  title="Save the current version of your document"
+                >
+                  💾 Save
+                </PrimaryButton>
               </div>
               <FileInfoDetails
                 className="mt-2"
                 fileInfo={fileInfo}
               />
-              <div className="grid md:grid-cols-3 grid-cols-1 mt-2 gap-4">
-                <DecryptButton
-                  file={file}
-                  fileInfo={fileInfo}
-                  reloadFile={reloadFile}
-                />
-              </div>
-
-              {
-                fileInfo.encrypted !== false
-                  ? (
-                    <InfoAdmonition className="my-4">
-                      <strong>🔒 Restrictions</strong>
-                      <p>There are restrictions on this document that must be removed before the document can be edited.</p>
-                    </InfoAdmonition>
-                  ) : null
-              }
+              <PdfViewer
+                file={file}
+                className="my-6 select-none"
+                pageClassName="h-96 overflow-auto resize-y"
+                loadingComponent={
+                  <div className="p-6">
+                    <Spinner>Loading document...</Spinner>
+                  </div>
+                }
+                encrypted={fileInfo.encrypted}
+                onDocumentLoad={onDocumentLoad}
+                gotoPage={gotoPage}
+                pageNumber={pageNumber}
+                numPages={numPages}
+                rotations={rotations}
+                rotatePage={rotatePage}
+              />
             </div>
           ) : (
             <Spinner>Processing file</Spinner>

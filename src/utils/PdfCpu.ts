@@ -353,7 +353,6 @@ const optimise = async (filePath: string) => {
 }
 
 const decrypt = async (filePath: string, userPassword?: string) => {
-  const outPath = filePath.replace(/\.pdf$/, `-decrypted.pdf`)
   const {
     exitCode,
     stdout,
@@ -362,14 +361,12 @@ const decrypt = async (filePath: string, userPassword?: string) => {
     `decrypt`,
     ...(userPassword ? [`-upw`, userPassword] : []),
     filePath,
-    outPath,
   ])
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
   }
   return {
     exitCode,
-    outPath,
     stderr,
     stdout,
   }

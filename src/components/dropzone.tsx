@@ -1,8 +1,9 @@
 import React from 'react'
 import { useDropzone } from 'react-dropzone'
+import type { DropzoneOptions } from 'react-dropzone'
 
 interface Props {
-  onDrop: (files: File[]) => void
+  onDrop: DropzoneOptions[`onDrop`]
 }
 
 const DropZone: React.FC<Props> = ({ onDrop }) => {

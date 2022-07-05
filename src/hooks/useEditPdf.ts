@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react'
 import PdfCpu from 'utils/PdfCpu'
-import type { File } from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
 
 const useEditPdf = (
@@ -18,7 +17,7 @@ const useEditPdf = (
   const saveFile = useCallback(async () => {
     setEditing(true)
     const arrayBuffer = await file.arrayBuffer()
-    const filePath = `/${file.path}`
+    const filePath = `/${file.name}`
     globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
       // TODO: run page re-orgs and deletions too
