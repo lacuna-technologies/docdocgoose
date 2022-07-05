@@ -1,5 +1,5 @@
 /* page that shows after unrestricted file is selected */
-import React from 'react'
+import React, { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { PrimaryButton, SecondaryButton } from 'components/button'
 import Storage from 'utils/Storage'
@@ -10,6 +10,7 @@ import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
 import usePdfViewerPage from 'hooks/usePdfViewerPage'
 import { truncateFilename } from 'utils/Utils'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 
 const PdfViewer = dynamic(() => import(`components/PdfViewer`), { ssr: false })
 
@@ -17,8 +18,15 @@ interface Props {
   wasmLoaded: boolean
 }
 
-const View: NextPage<Props> = ({ wasmLoaded }) => {
+const Edit: NextPage<Props> = ({ wasmLoaded }) => {
+  const router = useRouter()
   const file = Storage.getFile()
+
+  useEffect(() => {
+    if(!file){
+      router.replace(`/edit`)
+    }
+  }, [file, router])
 
   const {
     numPages,
@@ -30,7 +38,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
   const {
     rotatePage,
     rotations,
-  } = usePdfViewerRotate({ numPages, pageNumber })
+  } = usePdfViewerRotate({ numPages })
 
   const {
     saveFile,
@@ -85,4 +93,4 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
   )
 }
 
-export default View
+export default Edit

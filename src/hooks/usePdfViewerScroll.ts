@@ -1,18 +1,22 @@
 import { useCallback, useEffect } from 'react'
 
 const usePdfViewerScroll = ({ documentRef }: { documentRef: React.MutableRefObject<HTMLDivElement> }) => {
-  const onScroll = useCallback(() => {
-
+  const onScroll = useCallback((event: HTMLElementEventMap[`scroll`]) => {
+    const element = event.currentTarget as HTMLDivElement
+    console.log(`height`, element.clientHeight)
+    console.log(`scrollTop`, element.scrollTop)
+    console.log(`scrollHeight`, element.scrollHeight)
   }, [])
   
   useEffect(() => {
     if(documentRef !== null){
-      documentRef.current.addEventListener(`scroll`, onScroll)
+      const ref = documentRef.current
+      ref.addEventListener(`scroll`, onScroll)
       return () => {
-        documentRef.current.removeEventListener(`scroll`, onScroll)
+        ref.removeEventListener(`scroll`, onScroll)
       }
     }
-  }, [documentRef])
+  }, [documentRef, onScroll])
 }
 
 export default usePdfViewerScroll

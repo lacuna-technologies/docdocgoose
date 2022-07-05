@@ -28,6 +28,13 @@ interface Props {
 const View: NextPage<Props> = ({ wasmLoaded }) => {
   const router = useRouter()
   const file = Storage.getFile()
+
+  useEffect(() => {
+    if(!file){
+      router.replace(`/`)
+    }
+  }, [file, router])
+
   const {
     fileLoaded,
     error,
@@ -36,10 +43,10 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
   } = useFileInfo({ file, wasmLoaded })
 
   useEffect(() => {
-    if(fileInfo.encrypted === false){
+    if(file && fileInfo.encrypted === false){
       router.replace(`/edit`)
     }
-  }, [fileInfo, router])
+  }, [file, fileInfo, router])
 
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">

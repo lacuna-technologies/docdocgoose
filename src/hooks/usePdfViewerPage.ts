@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import type { PDFDocumentProxy } from 'pdfjs-dist'
 
 const usePdfViewerPage = () => {
   const [numPages, setNumPages] = useState(null as number)
@@ -8,7 +9,7 @@ const usePdfViewerPage = () => {
     setPageNumber(num)
   }, [])
 
-  const onDocumentLoad = useCallback((doc) => {
+  const onDocumentLoad = useCallback((doc: PDFDocumentProxy) => {
     setNumPages(doc.numPages)
   }, [setNumPages])
 

@@ -1,12 +1,13 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer'
 import usePdfViewerResize from 'hooks/usePdfViewerResize'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { PrimaryButton, SecondaryButton } from 'components/button'
-import type { DocumentProps } from 'react-pdf'
-import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
+import type { DocumentProps, PDFPageProxy } from 'react-pdf'
+import { VariableSizeList } from 'react-window'
+import type { PDFDocumentProxy } from 'pdfjs-dist'
 
 const ZoomButton = ({ children, onClick = () => {} }) => {
   return (
@@ -16,6 +17,37 @@ const ZoomButton = ({ children, onClick = () => {} }) => {
     >
       {children}
     </div>
+  )
+}
+
+const MainPageRenderer = ({ data: { scale, zoom, rotations, setPageHeight, setPageWidth }, index, style }) => {
+  const pageNumber = index + 1
+  return (
+    <div style={style}>
+      <MainPage
+        pageNumber={pageNumber}
+        scale={scale}
+        zoom={zoom}
+        rotations={rotations}
+        setPageHeight={setPageHeight}
+        setPageWidth={setPageWidth}
+      />
+    </div>
+  )
+}
+
+const MainPage = ({ pageNumber, scale, zoom, rotations, setPageHeight, setPageWidth }) => {
+  const onLoadSuccess = useCallback((page: PDFPageProxy) => {
+    setPageHeight(pageNumber, page.originalHeight)
+    setPageWidth(pageNumber, page.originalWidth)
+  }, [setPageHeight, setPageWidth, pageNumber])
+  return (
+    <Page
+      pageNumber={pageNumber}
+      scale={scale * zoom}
+      rotate={rotations[pageNumber - 1]}
+      onLoadSuccess={onLoadSuccess}
+    />
   )
 }
 
@@ -48,7 +80,7 @@ interface Props {
   numPages: number,
   gotoPage: (p: number) => void,
   rotations: number[],
-  rotatePage: () => void,
+  rotatePage: (n: number) => void,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -61,13 +93,16 @@ const PdfViewer: React.FC<Props> = ({
   rotations = [],
   rotatePage,
 }) => {
-  const mainDocumentDiv = useRef(null)
-  const mainPageDiv = useRef(null)
-
   const {
-    onPageLoad,
     scale,
-  } = usePdfViewerResize({ pageDiv: mainPageDiv })
+    documentRef,
+    documentHeight,
+    documentWidth,
+    onDocumentLoad: runInitialResize,
+    setPageHeight,
+    getPageHeight,
+    setPageWidth,
+  } = usePdfViewerResize({ pageNumber })
 
   const {
     zoom,
@@ -75,9 +110,18 @@ const PdfViewer: React.FC<Props> = ({
     zoomOut,
   } = usePdfViewerZoom()
 
-  usePdfViewerScroll({ documentRef: mainDocumentDiv })
+  const onClickRotate = useCallback(() => {
+    rotatePage(pageNumber)
+  }, [pageNumber, rotatePage])
 
-  const currentRotation = rotations[pageNumber - 1]
+  const getItemSize = useCallback((index) => {
+    getPageHeight(index + 1)
+  }, [getPageHeight])
+
+  const onDocumentLoadSuccess = useCallback((pdf: PDFDocumentProxy) => {
+    onDocumentLoad(pdf)
+    runInitialResize(pdf)
+  }, [onDocumentLoad, runInitialResize])
 
   return (
     <div className="flex max-h-full overflow-hidden select-none">
@@ -86,7 +130,7 @@ const PdfViewer: React.FC<Props> = ({
           <strong>PAGE</strong>
         </div>
         <div className="grid md:grid-cols-2 grid-cols-1 mt-2 gap-4">
-          <PrimaryButton onClick={rotatePage}>
+          <PrimaryButton onClick={onClickRotate}>
             🔃 Rotate
           </PrimaryButton>
           <PrimaryButton>
@@ -97,19 +141,31 @@ const PdfViewer: React.FC<Props> = ({
       <div className="flex flex-col max-w-full overflow-hidden grow">
         <Document
           file={file}
-          className="grow overflow-auto max-w-full"
+          className="grow overflow-auto max-w-full flex flex-col gap-2"
           loading={loadingComponent}
-          onLoadSuccess={onDocumentLoad}
+          onLoadSuccess={onDocumentLoadSuccess}
           externalLinkTarget="_blank"
-          inputRef={mainDocumentDiv}
+          inputRef={documentRef}
         >
-          <Page
-            pageNumber={pageNumber}
-            inputRef={mainPageDiv}
-            onLoadSuccess={onPageLoad}
-            scale={scale * zoom}
-            rotate={currentRotation}
-          />
+          {
+            (Number.isInteger(numPages) && numPages > 0) && (
+              <VariableSizeList
+                itemData={{
+                  rotations,
+                  scale,
+                  setPageHeight,
+                  setPageWidth,
+                  zoom,
+                }}
+                itemCount={numPages}
+                height={documentHeight}
+                width={documentWidth}
+                itemSize={getItemSize}
+              >
+                {MainPageRenderer}
+              </VariableSizeList>
+            )
+          }
         </Document>
         <div className="flex justify-between items-center gap-4 p-4">
           <SecondaryButton>

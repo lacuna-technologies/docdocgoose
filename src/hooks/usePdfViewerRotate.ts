@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const usePdfViewerRotate = ({ pageNumber, numPages }) => {
+const usePdfViewerRotate = ({ numPages }) => {
   const [rotations, setRotations] = useState([] as number[])
-  const rotatePage = useCallback(() => {
+  const rotatePage = useCallback((pageNumber: number) => {
     if(rotations.length > 0){
       const newRotations = [
         ...rotations.slice(0, pageNumber - 1),
@@ -11,7 +11,11 @@ const usePdfViewerRotate = ({ pageNumber, numPages }) => {
       ]
       setRotations(newRotations)
     }
-  }, [rotations, pageNumber])
+  }, [rotations])
+
+  const getRotation = useCallback((pageNumber) => {
+    return rotations[pageNumber - 1] || 0
+  }, [rotations])
 
   useEffect(() => {
     if(rotations.length === 0 && Number.isInteger(numPages)){
@@ -20,6 +24,7 @@ const usePdfViewerRotate = ({ pageNumber, numPages }) => {
   }, [rotations, numPages])
 
   return {
+    getRotation,
     rotatePage,
     rotations,
     setRotations,
