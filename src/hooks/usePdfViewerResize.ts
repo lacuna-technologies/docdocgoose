@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 
-const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
+const usePdfViewerResize = ({ pageIndex }: { pageIndex: number }) => {
   const documentRef = useRef(null)
   const [scale, setScale] = useState(1)
   const [documentHeight, setDocumentHeight] = useState(500)
@@ -9,12 +9,12 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
   const [pageHeights, setPageHeights] = useState<number[]>([])
   const [pageWidths, setPageWidths] = useState<number[]>([])
 
-  const getPageHeight = useCallback((pageNumber: number) => {
-    return pageHeights[pageNumber - 1] || 500
+  const getPageHeight = useCallback((pageIndex: number) => {
+    return pageHeights[pageIndex] || 500
   }, [pageHeights])
 
-  const getPageWidth = useCallback((pageNumber: number) => {
-    return pageWidths[pageNumber - 1] || 500
+  const getPageWidth = useCallback((pageIndex: number) => {
+    return pageWidths[pageIndex] || 500
   }, [pageWidths])
 
   const setDocumentSize = useCallback(() => {
@@ -24,27 +24,27 @@ const usePdfViewerResize = ({ pageNumber }: { pageNumber: number }) => {
     }
   }, [documentRef])
 
-  const setPageHeight = useCallback((pageNumber: number, height: number) => {
+  const setPageHeight = useCallback((pageIndex: number, height: number) => {
     setPageHeights(arr => ([
-      ...arr.slice(0, pageNumber - 1),
+      ...arr.slice(0, pageIndex),
       height,
-      ...arr.slice(pageNumber),
+      ...arr.slice(pageIndex + 1),
     ]))
     setDocumentSize()
   }, [setDocumentSize])
 
-  const setPageWidth = useCallback((pageNumber: number, width: number) => {
+  const setPageWidth = useCallback((pageIndex: number, width: number) => {
     setPageWidths(arr => ([
-      ...arr.slice(0, pageNumber - 1),
+      ...arr.slice(0, pageIndex),
       width,
-      ...arr.slice(pageNumber),
+      ...arr.slice(pageIndex + 1),
     ]))
   }, [])
 
   const resizePage = useCallback(() => {
-    const s = documentWidth / getPageWidth(pageNumber)
+    const s = documentWidth / getPageWidth(pageIndex)
     setScale(s)
-  }, [documentWidth, pageNumber, getPageWidth])
+  }, [documentWidth, pageIndex, getPageWidth])
 
   const onResize = useCallback(() => {
     setDocumentSize()

@@ -394,12 +394,35 @@ const rotate = async (filePath: string, pageNumber: number, angle: number) => {
   }
 }
 
+const remove = async (filePath: string, pageNumber: number) => {
+  const {
+    exitCode,
+    stdout,
+    stderr,
+  } = await run([
+    `pages`,
+    `remove`,
+    `-p`,
+    `${pageNumber}`,
+    filePath,
+  ])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    stderr,
+    stdout,
+  }
+}
+
 const PdfCpu = {
   clearStd,
   decrypt,
   getInfo,
   go,
   optimise,
+  remove,
   rotate,
   run,
   setGo,
