@@ -44,8 +44,8 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
       <Head>
         <title>{file.name} | 📄 DocsTogether</title>
       </Head>
-      <div className="bg-slate-200 h-full min-h-screen max-h-screen flex flex-col p-4">
-        <div className="flex justify-between mb-4">
+      <div className="bg-slate-200 h-full min-h-screen max-h-screen flex flex-col">
+        <div className="flex justify-between p-4">
           <SecondaryButton
             href="/"
             className="w-fit"

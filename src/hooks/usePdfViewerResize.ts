@@ -1,18 +1,16 @@
-import { useRef, useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import type { PDFPageProxy } from 'react-pdf'
 
-const usePdfViewerResize = () => {
-
-  const pageDiv = useRef(null)
+const usePdfViewerResize = ({ pageDiv }: { pageDiv: React.MutableRefObject<HTMLDivElement>}) => {
   const [scale, setScale] = useState(1)
   const [pageWidth, setPageWidth] = useState(null)
 
   const resizePage = useCallback((width: number) => {
-    if(pageDiv !== null && Number.isInteger(width)){
+    if(pageDiv !== null && typeof width === `number`){
       const s = pageDiv.current.clientWidth / width
       setScale(s)
     }
-  }, [])
+  }, [pageDiv])
 
   const onPageLoad = useCallback((page: PDFPageProxy) => {
     setPageWidth(page.originalWidth)
