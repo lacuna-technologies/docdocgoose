@@ -61,8 +61,6 @@ const PdfViewer: React.FC<Props> = ({
   const computedScale = scale * zoom
   const numPages = pageOrder.length
 
-  
-
   return (
     <div className="flex max-h-full overflow-hidden select-none">
       <div className="flex flex-col flex-none px-4">

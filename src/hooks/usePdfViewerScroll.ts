@@ -1,8 +1,5 @@
 import { useCallback, useEffect } from 'react'
 
-// https://github.com/michaeldzjap/react-pdf-sample/tree/master/src
-// https://github.com/bvaughn/react-window
-
 const GAP_SIZE = 20 // in pixels
 
 const getScrollRatio = (curSum: number, index: number, curScroll: number, pageHeights: number[]): number => {
@@ -24,11 +21,15 @@ const getScrollRatio = (curSum: number, index: number, curScroll: number, pageHe
   return getScrollRatio(curSum + pageHeights[index], index + 1, curScroll, pageHeights)
 }
 
+const getPageHeights = (pageOrder: PageInfo[]) => pageOrder.map(({ height, width, rotation }) => (
+  // assume all pages are rectangular
+  (rotation % 180 === 90) ? width : height
+))
+
 const usePdfViewerScroll = (
   {
     documentRef,
     setCurrentPage,
-    pageIndex,
     pageOrder,
   }:
   {
@@ -38,19 +39,11 @@ const usePdfViewerScroll = (
     pageIndex: number,
   }
 ) => {
-  // const getScaledPageHeights = useCallback((element: HTMLDivElement) => {
-  //   const maxScroll = element.scrollHeight - element.clientHeight
-  //   const pageHeights = pageOrder.map(({ height }) => height).reduce((a, b) => a + b, 0)
-  //   const scale = maxScroll / (pageHeights + (pageOrder.length * GAP_SIZE))
-  //   const scaledPageHeights = pageHeights.map(h => h * scale)
-  //   return scaledPageHeights
-  // }, [pageOrder])
-
   const onScroll = useCallback((event: HTMLElementEventMap[`scroll`]) => {
     const element = event.target as HTMLDivElement
     if(element){
       const curScroll = element.scrollTop
-      const pageHeights = pageOrder.map(({ height }) => height)
+      const pageHeights = getPageHeights(pageOrder)
       const scrollRatio = getScrollRatio(0, 0, curScroll, pageHeights)
       const scrollPageIndex = Math.min(Math.floor(scrollRatio + 0.3), pageOrder.length - 1)
       setCurrentPage(scrollPageIndex)
@@ -59,7 +52,7 @@ const usePdfViewerScroll = (
 
   const scrollToPage = useCallback((pageIndex: number) => {
     if(documentRef !== null){
-      const pageHeights = pageOrder.map(({ height }) => height)
+      const pageHeights = getPageHeights(pageOrder)
       const scrollHeight = (
         (pageIndex * GAP_SIZE) +
         pageHeights.slice(0, pageIndex).reduce((acc, cur) => acc + cur, 0)

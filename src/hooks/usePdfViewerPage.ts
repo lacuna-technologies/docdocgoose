@@ -54,10 +54,13 @@ const usePdfViewerPage = () => {
   }, [])
 
   const rotatePage = useCallback((pageIndex: number) => {
-    setPage(pageIndex, p => ({
-      ...p,
-      rotation: (p.rotation + 90) % 360,
-    }))
+    setPage(pageIndex, p => {
+      const rotation = (p.rotation + 90) % 360
+      return {
+        ...p,
+        rotation,
+      }
+    })
   }, [setPage])
 
   const getRotation = useCallback((pageIndex: number) => {

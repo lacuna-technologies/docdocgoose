@@ -22,7 +22,7 @@ const MiniPage: React.FC<Props> = ({ pageIndex, selectPage, rotation, current })
       </div>
       <Page
         className="select-none cursor-pointer"
-        pageNumber={pageNumber}
+        pageIndex={pageIndex}
         scale={0.2}
         rotate={rotation}
         renderTextLayer={false}

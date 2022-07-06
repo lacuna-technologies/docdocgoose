@@ -10,7 +10,7 @@ type Props = {
 }
 
 const MainPage: React.FC<Props> = ({ pageIndex, scale, rotation, setPage }) => {
-  const onLoadSuccess = useCallback((page: PDFPageProxy) => {
+  const onRenderSuccess = useCallback((page: PDFPageProxy) => {
     setPage(pageIndex, (p) => ({
       ...p,
       height: page.height,
@@ -19,13 +19,12 @@ const MainPage: React.FC<Props> = ({ pageIndex, scale, rotation, setPage }) => {
       width: page.width,
     }))
   }, [setPage, pageIndex])
-  const pageNumber = pageIndex + 1
   return (
     <Page
-      pageNumber={pageNumber}
+      pageIndex={pageIndex}
       scale={scale}
       rotate={rotation}
-      onLoadSuccess={onLoadSuccess}
+      onRenderSuccess={onRenderSuccess}
       renderTextLayer={false}
       renderAnnotationLayer={false}
     />
