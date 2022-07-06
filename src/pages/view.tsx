@@ -48,6 +48,10 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
     }
   }, [file, fileInfo, router])
 
+  useEffect(() => {
+    router.prefetch(`/edit`)
+  }, [router])
+
   return (
     <div className="bg-slate-200 h-full min-h-screen flex flex-col">
       <Header />
@@ -88,7 +92,6 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                   reloadFile={reloadFile}
                 />
               </div>
-
               {
                 fileInfo.encrypted !== false
                   ? (

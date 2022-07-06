@@ -1,12 +1,8 @@
 import React, { useCallback } from 'react'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
-import 'react-pdf/dist/esm/Page/TextLayer'
-import usePdfViewerResize from 'hooks/usePdfViewerResize'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { PrimaryButton } from 'components/button'
 import type { DocumentProps } from 'react-pdf'
-import type { PDFDocumentProxy } from 'pdfjs-dist'
 import MiniPage from 'components/edit/miniPage'
 import MainPage from 'components/edit/mainPage'
 import DocumentBottomBar from 'components/edit/documentBottomBar'
@@ -21,6 +17,9 @@ interface Props {
   setCurrentPage: (pageIndex: number) => void,
   rotatePage: (pageIndex: number) => void,
   removeCurrentPage: () => void,
+  scale: number,
+  documentRef: React.RefObject<HTMLDivElement>,
+  setPage: (pageIndex: number, action: (p: PageInfo) => PageInfo) => void,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -32,30 +31,25 @@ const PdfViewer: React.FC<Props> = ({
   setCurrentPage,
   rotatePage,
   removeCurrentPage,
+  documentRef,
+  scale,
+  setPage,
 }) => {
-  const {
-    scale,
-    documentRef,
-    onDocumentLoad: runInitialResize,
-    setPageHeight,
-    setPageWidth,
-    pageHeights,
-  } = usePdfViewerResize({ pageIndex })
-
   const {
     zoom,
     zoomIn,
     zoomOut,
   } = usePdfViewerZoom()
+  const { scrollToPage } = usePdfViewerScroll({ documentRef, pageIndex, pageOrder, setCurrentPage })
+
+  const selectPage = useCallback((pageIndex: number) => {
+    // setCurrentPage(pageIndex)
+    scrollToPage(pageIndex)
+  }, [scrollToPage])
 
   const onClickRotate = useCallback(() => {
     rotatePage(pageIndex)
   }, [pageIndex, rotatePage])
-
-  const onDocumentLoadSuccess = useCallback((pdf: PDFDocumentProxy) => {
-    onDocumentLoad(pdf)
-    runInitialResize(pdf)
-  }, [onDocumentLoad, runInitialResize])
 
   const onClickDelete = useCallback(() => {
     const confirmDelete = window.confirm(`Are you sure you want to delete page ${pageIndex + 1}?`)
@@ -67,7 +61,7 @@ const PdfViewer: React.FC<Props> = ({
   const computedScale = scale * zoom
   const numPages = pageOrder.length
 
-  // usePdfViewerScroll({ documentRef, pageHeights, pageNumber, setCurrentPage })
+  
 
   return (
     <div className="flex max-h-full overflow-hidden select-none">
@@ -87,9 +81,9 @@ const PdfViewer: React.FC<Props> = ({
       <div className="flex flex-col max-w-full overflow-hidden grow">
         <Document
           file={file}
-          className="grow overflow-auto max-w-full flex flex-col gap-2"
+          className="grow overflow-auto max-w-full flex flex-col gap-[20px]"
           loading={loadingComponent}
-          onLoadSuccess={onDocumentLoadSuccess}
+          onLoadSuccess={onDocumentLoad}
           externalLinkTarget="_blank"
           inputRef={documentRef}
         >
@@ -102,8 +96,7 @@ const PdfViewer: React.FC<Props> = ({
                     pageIndex={index}
                     rotation={rotation}
                     scale={computedScale}
-                    setPageHeight={setPageHeight}
-                    setPageWidth={setPageWidth}
+                    setPage={setPage}
                   />
                 )
               })
@@ -129,7 +122,7 @@ const PdfViewer: React.FC<Props> = ({
                   key={`mini-page-${pageNumber}`}
                   current={index === pageIndex}
                   pageIndex={index}
-                  setCurrentPage={setCurrentPage}
+                  selectPage={selectPage}
                   rotation={rotation}
                 />
               )

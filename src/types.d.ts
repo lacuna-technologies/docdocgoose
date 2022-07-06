@@ -5,4 +5,8 @@ declare var Buffer: any
 type PageInfo = {
   rotation: number,
   pageNumber: number,
+  width: number,
+  originalHeight: number,
+  height: number,
+  originalWidth: number,
 }

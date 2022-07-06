@@ -1,61 +1,72 @@
 import { useCallback, useEffect } from 'react'
-import { debounce } from 'utils/Utils'
 
 // https://github.com/michaeldzjap/react-pdf-sample/tree/master/src
 // https://github.com/bvaughn/react-window
+
+const GAP_SIZE = 20 // in pixels
+
+const getScrollRatio = (curSum: number, index: number, curScroll: number, pageHeights: number[]): number => {
+  if(curScroll === 0){
+    return 0
+  }
+  const prevIndex = index - 1
+  const fullCurSum = curSum + (GAP_SIZE * prevIndex)
+  if(fullCurSum === curScroll){
+    return pageHeights.length - 1
+  }
+  if(fullCurSum >= curScroll){
+    const prevPage = pageHeights[prevIndex]
+    return prevIndex + ((prevPage - (fullCurSum - curScroll)) / prevPage)
+  }
+  if(index >= pageHeights.length){
+    return pageHeights.length
+  }
+  return getScrollRatio(curSum + pageHeights[index], index + 1, curScroll, pageHeights)
+}
 
 const usePdfViewerScroll = (
   {
     documentRef,
     setCurrentPage,
-    pageHeights,
-    pageNumber,
+    pageIndex,
+    pageOrder,
   }:
   {
     documentRef: React.MutableRefObject<HTMLDivElement>,
-    setCurrentPage: (pageNumber: number) => void,
-    pageHeights: number[],
-    pageNumber: number,
+    setCurrentPage: (pageIndex: number) => void,
+    pageOrder: PageInfo[],
+    pageIndex: number,
   }
 ) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onScroll = useCallback(debounce((event: HTMLElementEventMap[`scroll`]) => {
+  // const getScaledPageHeights = useCallback((element: HTMLDivElement) => {
+  //   const maxScroll = element.scrollHeight - element.clientHeight
+  //   const pageHeights = pageOrder.map(({ height }) => height).reduce((a, b) => a + b, 0)
+  //   const scale = maxScroll / (pageHeights + (pageOrder.length * GAP_SIZE))
+  //   const scaledPageHeights = pageHeights.map(h => h * scale)
+  //   return scaledPageHeights
+  // }, [pageOrder])
+
+  const onScroll = useCallback((event: HTMLElementEventMap[`scroll`]) => {
     const element = event.target as HTMLDivElement
     if(element){
-      // recursive ratio function
-      // use fixed gap
-      // curScroll/maxScroll
-
-      const maxScroll = element.scrollHeight - element.clientHeight
       const curScroll = element.scrollTop
-      const viewportHeightRatio = element.clientHeight / pageHeights[pageNumber]
-      // const scrollThreshold = viewportHeightRatio > 1 ? viewportHeightRatio : 
-      const { index } = pageHeights.reduce((acc, pageHeight, index) => {
-        if(curScroll < (acc.sum + (pageHeight * (1 - (viewportHeightRatio / 2))))){
-          return acc
-        }
-        return {
-          index: index + 1,
-          sum: acc.sum + pageHeight,
-        }
-      }, {
-        index: 0,
-        sum: 0,
-      })
-      console.log(`scroll set current page`, index + 1)
-      // console.log(`scrollThreshold`, scrollThreshold)
-      console.log(curScroll)
-      console.log(pageHeights)
-      setCurrentPage(index + 1)
-      // if(index === -1){
-      //   setCurrentPage(1)
-      // } else if(pageHeights.length === index + 1){
-      //   setCurrentPage(index + 1)
-      // } else {
-        
-      // }
+      const pageHeights = pageOrder.map(({ height }) => height)
+      const scrollRatio = getScrollRatio(0, 0, curScroll, pageHeights)
+      const scrollPageIndex = Math.min(Math.floor(scrollRatio + 0.3), pageOrder.length - 1)
+      setCurrentPage(scrollPageIndex)
     }
-  }), [pageHeights])
+  }, [pageOrder, setCurrentPage])
+
+  const scrollToPage = useCallback((pageIndex: number) => {
+    if(documentRef !== null){
+      const pageHeights = pageOrder.map(({ height }) => height)
+      const scrollHeight = (
+        (pageIndex * GAP_SIZE) +
+        pageHeights.slice(0, pageIndex).reduce((acc, cur) => acc + cur, 0)
+      )
+      documentRef.current.scrollTo(0, scrollHeight)
+    }
+  }, [documentRef, pageOrder])
   
   useEffect(() => {
     if(documentRef !== null){
@@ -66,6 +77,10 @@ const usePdfViewerScroll = (
       }
     }
   }, [documentRef, onScroll])
+
+  return {
+    scrollToPage,
+  }
 }
 
 export default usePdfViewerScroll

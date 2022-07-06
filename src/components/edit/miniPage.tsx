@@ -3,15 +3,15 @@ import { Page } from 'react-pdf/dist/esm/entry.webpack5'
 
 type Props = {
   pageIndex: number,
-  setCurrentPage: (n: number) => void,
+  selectPage: (pageIndex: number) => void,
   rotation: number,
   current: boolean
 }
 
-const MiniPage: React.FC<Props> = ({ pageIndex, setCurrentPage, rotation, current }) => {
+const MiniPage: React.FC<Props> = ({ pageIndex, selectPage, rotation, current }) => {
   const onClick = useCallback(() => {
-    setCurrentPage(pageIndex)
-  }, [pageIndex, setCurrentPage])
+    selectPage(pageIndex)
+  }, [pageIndex, selectPage])
   const currentClass = current ? `bg-slate-300` : ``
   const pageNumber = pageIndex + 1
 
@@ -25,6 +25,8 @@ const MiniPage: React.FC<Props> = ({ pageIndex, setCurrentPage, rotation, curren
         pageNumber={pageNumber}
         scale={0.2}
         rotate={rotation}
+        renderTextLayer={false}
+        renderAnnotationLayer={false}
       />
     </div>
   )

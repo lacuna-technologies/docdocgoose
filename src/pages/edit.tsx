@@ -17,7 +17,7 @@ interface Props {
   wasmLoaded: boolean
 }
 
-const Edit: NextPage<Props> = ({ wasmLoaded }) => {
+const Edit: NextPage<Props> = () => {
   const router = useRouter()
   const file = Storage.getFile()
 
@@ -27,19 +27,12 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
     }
   }, [file, router])
 
-  const {
-    pageIndex,
-    onDocumentLoad,
-    setCurrentPage,
-    pageOrder,
-    removeCurrentPage,
-    rotatePage,
-  } = usePdfViewerPage()
+  const pageProps = usePdfViewerPage()
 
   const {
     saveFile,
     editing,
-  } = useEditPdf({ file, pageOrder })
+  } = useEditPdf({ file, pageOrder: pageProps.pageOrder })
 
   const shortFileName = truncateFilename(file.name)
 
@@ -77,12 +70,7 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
               <Spinner>Loading document...</Spinner>
             </div>
           }
-          onDocumentLoad={onDocumentLoad}
-          setCurrentPage={setCurrentPage}
-          pageIndex={pageIndex}
-          pageOrder={pageOrder}
-          rotatePage={rotatePage}
-          removeCurrentPage={removeCurrentPage}
+          {...pageProps}
         />
       </div>
     </>

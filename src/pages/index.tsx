@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import Header from 'components/header'
 import Footer from 'components/footer'
@@ -27,6 +27,10 @@ const Home: NextPage = () => {
     setDropped(true)
     Storage.setFile(acceptedFiles[0])
     router.push(`/view`)
+  }, [router])
+
+  useEffect(() => {
+    router.prefetch(`/view`)
   }, [router])
   
   return (
