@@ -12,7 +12,7 @@ interface Props {
   title?: string,
 }
 
-const buttonClasses = `font-light rounded px-4 py-2 no-underline border border-slate-400 hover:border-slate-500 h-full flex items-center justify-center text-center select-none`
+const buttonClasses = `font-light rounded md:px-4 px-2 md:py-2 py-1 no-underline border border-slate-400 hover:border-slate-500 h-full flex items-center justify-center text-center select-none`
 
 export const PrimaryButton: React.FC<Props> = ({
   children,

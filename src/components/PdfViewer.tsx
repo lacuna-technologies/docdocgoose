@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
-import { PrimaryButton } from 'components/button'
 import type { DocumentProps, PDFPageProxy } from 'react-pdf'
 import MiniPage from 'components/edit/miniPage'
 import MainPage from 'components/edit/mainPage'
 import DocumentBottomBar from 'components/edit/documentBottomBar'
 import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
+import LeftSideBar from './edit/leftSidebar'
 
 interface Props {
   file: File,
@@ -48,17 +48,6 @@ const PdfViewer: React.FC<Props> = ({
     scrollToPage(pageIndex)
   }, [scrollToPage])
 
-  const onClickRotate = useCallback(() => {
-    rotatePage(pageIndex)
-  }, [pageIndex, rotatePage])
-
-  const onClickDelete = useCallback(() => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete page ${pageIndex + 1}?`)
-    if(confirmDelete){
-      removeCurrentPage()
-    }
-  }, [pageIndex, removeCurrentPage])
-
   const onFirstPageLoad = useCallback((page: PDFPageProxy) => {
     zoomFullWidth(page.originalWidth)
   }, [zoomFullWidth])
@@ -67,20 +56,12 @@ const PdfViewer: React.FC<Props> = ({
   const numPages = pageOrder.length
 
   return (
-    <div className="flex max-h-full overflow-hidden select-none">
-      <div className="flex flex-col flex-none px-4">
-        <div>
-          <strong>PAGE</strong>
-        </div>
-        <div className="grid md:grid-cols-2 grid-cols-1 mt-2 gap-4">
-          <PrimaryButton onClick={onClickRotate}>
-            🔃 Rotate
-          </PrimaryButton>
-          <PrimaryButton onClick={onClickDelete}>
-            🗑️ Delete
-          </PrimaryButton>
-        </div>
-      </div>
+    <div className="flex md:flex-row flex-col md:gap-0 gap-2 max-h-full overflow-hidden select-none">
+      <LeftSideBar
+        pageIndex={pageIndex}
+        removeCurrentPage={removeCurrentPage}
+        rotatePage={rotatePage}
+      />
       <div className="flex flex-col max-w-full overflow-hidden grow">
         <Document
           file={file}
@@ -117,7 +98,7 @@ const PdfViewer: React.FC<Props> = ({
       </div>
       <Document
         file={file}
-        className="flex flex-none flex-col gap-1 overflow-auto ml-4"
+        className="flex-none flex-col gap-1 overflow-auto ml-4 hidden md:flex"
       >
         {
           (Array.isArray(pageOrder) && numPages > 0) && (

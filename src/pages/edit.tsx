@@ -34,23 +34,21 @@ const Edit: NextPage<Props> = () => {
     editing,
   } = useEditPdf({ file, pageOrder: pageProps.pageOrder })
 
-  const shortFileName = truncateFilename(file.name)
-
   return (
     <>
       <Head>
-        <title>{file.name} | 📄 DocsTogether</title>
+        <title>{file?.name} | 📄 DocsTogether</title>
       </Head>
       <div className="bg-slate-200 h-full min-h-screen max-h-screen flex flex-col">
-        <div className="flex justify-between p-4">
+        <div className="flex justify-between md:p-4 p-2 gap-2">
           <SecondaryButton
             href="/"
             className="w-fit"
           >
-            ◀️ Pick another file
+            ◀️<span className="hidden md:inline-block">&nbsp;Pick another file</span>
           </SecondaryButton>
-          <div>
-            {shortFileName}
+          <div className="text-center truncate overflow-x-auto">
+            {file.name}
           </div>
           <PrimaryButton
             onClick={saveFile}
@@ -60,7 +58,7 @@ const Edit: NextPage<Props> = () => {
             loading={editing}
             title="Save the current version of your document"
           >
-            💾 Save
+            💾<span className="hidden md:inline-block">&nbsp;Save</span>
           </PrimaryButton>
         </div>
         <PdfViewer

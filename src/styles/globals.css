@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-size: 1.2rem;
-}
-
 @layer base {
+  html {
+    @apply md:text-xl text-base;
+  }
   a {
     @apply underline decoration-dotted;
   }

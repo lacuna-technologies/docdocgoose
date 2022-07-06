@@ -3,12 +3,11 @@ import useOptimisePdf from 'hooks/useOptimisePdf'
 import { PrimaryButton } from 'components/button'
 import Spinner from 'components/spinner'
 import { humanFileSize } from 'utils/Utils'
+import Storage from 'utils/Storage'
 
-type Props = {
-  file: File,
-}
-
-const OptimiseButton: React.FC<Props> = ({ file }) => {
+const OptimiseButton: React.FC = () => {
+  // TODO: apply saveFile mutations first
+  const file = Storage.getFile()
   const {
     optimising,
     optimisedResult,
