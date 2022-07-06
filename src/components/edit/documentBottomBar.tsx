@@ -26,7 +26,7 @@ type Props = {
 const DocumentBottomBar: React.FC<Props> = ({ pageIndex, pageOrder, zoomIn, zoomOut, zoomFullWidth }) => {
   return (
     <div className="flex justify-between items-center md:gap-4 gap-2 md:p-4 p-2">
-      <SecondaryButton className="text-sm px-3 py-1">
+      <SecondaryButton className="text-sm px-3 py-1" href="/info">
         ℹ️<span className="hidden md:inline-block">&nbsp;Info</span>
       </SecondaryButton>
       <div>

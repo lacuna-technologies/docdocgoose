@@ -7,7 +7,6 @@ import type { NextPage } from 'next'
 import Spinner from 'components/spinner'
 import useEditPdf from 'hooks/useEditPdf'
 import usePdfViewerPage from 'hooks/usePdfViewerPage'
-import { truncateFilename } from 'utils/Utils'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 

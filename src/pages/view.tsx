@@ -63,7 +63,7 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                 href="/"
                 className="w-fit"
               >
-                ◀️ Pick another file
+                ◀️<span className="hidden md:inline-block">&nbsp;Pick another file</span>
               </SecondaryButton>
               <div className="flex items-center justify-between gap-4 mt-6">
                 <div>

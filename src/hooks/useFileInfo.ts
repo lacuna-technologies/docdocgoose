@@ -9,6 +9,7 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
   const [fileLoaded, setFileLoaded] = useState(false)
   const [error, setError] = useState(null as string)
   const [fileInfo, setFileInfo] = useState({} as FileInfo)
+  const [newFileInfo, setNewFileInfo] = useState({} as FileInfo)
 
   useEffect(() => {
     if(fileLoaded){ // only run once
@@ -56,9 +57,13 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
 
   return {
     error,
-    fileInfo,
+    fileInfo: {
+      ...fileInfo,
+      ...newFileInfo,
+    },
     fileLoaded,
     reloadFile,
+    setNewFileInfo,
   }
 }
 
