@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import { PrimaryButton } from 'components/button'
-import type { DocumentProps } from 'react-pdf'
+import type { DocumentProps, PDFPageProxy } from 'react-pdf'
 import MiniPage from 'components/edit/miniPage'
 import MainPage from 'components/edit/mainPage'
 import DocumentBottomBar from 'components/edit/documentBottomBar'
@@ -20,6 +20,7 @@ interface Props {
   scale: number,
   documentRef: React.RefObject<HTMLDivElement>,
   setPage: (pageIndex: number, action: (p: PageInfo) => PageInfo) => void,
+  zoomFullWidth: (pageWidth?: number) => void,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -34,6 +35,7 @@ const PdfViewer: React.FC<Props> = ({
   documentRef,
   scale,
   setPage,
+  zoomFullWidth,
 }) => {
   const {
     zoom,
@@ -43,7 +45,6 @@ const PdfViewer: React.FC<Props> = ({
   const { scrollToPage } = usePdfViewerScroll({ documentRef, pageIndex, pageOrder, setCurrentPage })
 
   const selectPage = useCallback((pageIndex: number) => {
-    // setCurrentPage(pageIndex)
     scrollToPage(pageIndex)
   }, [scrollToPage])
 
@@ -57,6 +58,10 @@ const PdfViewer: React.FC<Props> = ({
       removeCurrentPage()
     }
   }, [pageIndex, removeCurrentPage])
+
+  const onFirstPageLoad = useCallback((page: PDFPageProxy) => {
+    zoomFullWidth(page.originalWidth)
+  }, [zoomFullWidth])
 
   const computedScale = scale * zoom
   const numPages = pageOrder.length
@@ -95,6 +100,7 @@ const PdfViewer: React.FC<Props> = ({
                     rotation={rotation}
                     scale={computedScale}
                     setPage={setPage}
+                    {...(index === 0 ? { onLoadSuccess: onFirstPageLoad } : {})}
                   />
                 )
               })
@@ -106,6 +112,7 @@ const PdfViewer: React.FC<Props> = ({
           pageOrder={pageOrder}
           zoomIn={zoomIn}
           zoomOut={zoomOut}
+          zoomFullWidth={zoomFullWidth}
         />
       </div>
       <Document

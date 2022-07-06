@@ -20,9 +20,10 @@ type Props = {
   pageOrder: PageInfo[],
   zoomIn: () => void,
   zoomOut: () => void,
+  zoomFullWidth: () => void,
 }
 
-const DocumentBottomBar: React.FC<Props> = ({ pageIndex, pageOrder, zoomIn, zoomOut }) => {
+const DocumentBottomBar: React.FC<Props> = ({ pageIndex, pageOrder, zoomIn, zoomOut, zoomFullWidth }) => {
   return (
     <div className="flex justify-between items-center gap-4 p-4">
       <SecondaryButton className="text-sm px-3 py-1">
@@ -31,13 +32,18 @@ const DocumentBottomBar: React.FC<Props> = ({ pageIndex, pageOrder, zoomIn, zoom
       <div>
         {pageIndex + 1} / {pageOrder.length}
       </div>
-      <div className="flex gap-3 font-black text-white text-xl">
-        <ZoomButton onClick={zoomIn}>
-          +
-        </ZoomButton>
-        <ZoomButton onClick={zoomOut}>
-          -
-        </ZoomButton>
+      <div className="flex gap-3">
+        <SecondaryButton className="text-sm px-3 py-1" onClick={zoomFullWidth}>
+          Auto
+        </SecondaryButton>
+        <div className="flex gap-3 font-black text-white text-xl">
+          <ZoomButton onClick={zoomIn}>
+            +
+          </ZoomButton>
+          <ZoomButton onClick={zoomOut}>
+            -
+          </ZoomButton>
+        </div>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useRef, SetStateAction } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 
 const DEFAULT_PAGE_WIDTH = 500
@@ -8,8 +8,6 @@ const usePdfViewerPage = () => {
   const documentRef = useRef(null)
   const [pageIndex, setPageIndex] = useState(0)
   const [pageOrder, setPageOrder] = useState<PageInfo[]>([]) // array of page numbers
-  const [documentHeight, setDocumentHeight] = useState(DEFAULT_PAGE_HEIGHT)
-  const [documentWidth, setDocumentWidth] = useState(DEFAULT_PAGE_WIDTH)
   const [scale, setScale] = useState(1)
 
   const setCurrentPage = useCallback((index: number) => {
@@ -28,6 +26,15 @@ const usePdfViewerPage = () => {
       })
     ))
   }, [])
+
+  const zoomFullWidth = useCallback((pageWidth?: number) => {
+    if(documentRef && documentRef?.current){
+      const documentWidth = documentRef.current.clientWidth
+      const pWidth = (typeof pageWidth === `number`) ? pageWidth : pageOrder[pageIndex].originalWidth
+      const s = documentWidth / pWidth
+      setScale(s)
+    }
+  }, [pageOrder, pageIndex])
 
   const removePage = useCallback((index: number) => {
     if(index === pageIndex){
@@ -67,24 +74,13 @@ const usePdfViewerPage = () => {
     return pageOrder[pageIndex]?.rotation || 0
   }, [pageOrder])
 
-  const setDocumentSize = useCallback(() => {
-    if(documentRef !== null){
-      setDocumentHeight(documentRef.current.clientHeight)
-      setDocumentWidth(documentRef.current.clientWidth)
-    }
-  }, [documentRef])
-
-  const onResize = useCallback(() => {
-    setDocumentSize()
-    // resize page
-  }, [setDocumentSize])
-
   useEffect(() => {
+    const onResize = () => { zoomFullWidth() }
     window.addEventListener(`resize`, onResize)
     return () => {
       window.removeEventListener(`resize`, onResize)
     }
-  }, [onResize])
+  }, [zoomFullWidth])
 
   return {
     documentRef,
@@ -97,6 +93,7 @@ const usePdfViewerPage = () => {
     scale,
     setCurrentPage,
     setPage,
+    zoomFullWidth,
   }
 }
 
