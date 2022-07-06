@@ -6,7 +6,6 @@ import Storage from 'utils/Storage'
 import type { NextPage } from 'next'
 import Spinner from 'components/spinner'
 import useEditPdf from 'hooks/useEditPdf'
-import usePdfViewerRotate from 'hooks/usePdfViewerRotate'
 import usePdfViewerPage from 'hooks/usePdfViewerPage'
 import { truncateFilename } from 'utils/Utils'
 import Head from 'next/head'
@@ -29,24 +28,18 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
   }, [file, router])
 
   const {
-    numPages,
     pageIndex,
     onDocumentLoad,
     setCurrentPage,
     pageOrder,
     removeCurrentPage,
-  } = usePdfViewerPage()
-
-  const {
     rotatePage,
-    rotations,
-    getRotation,
-  } = usePdfViewerRotate({ numPages })
+  } = usePdfViewerPage()
 
   const {
     saveFile,
     editing,
-  } = useEditPdf({ file, rotations })
+  } = useEditPdf({ file, pageOrder })
 
   const shortFileName = truncateFilename(file.name)
 
@@ -89,7 +82,6 @@ const Edit: NextPage<Props> = ({ wasmLoaded }) => {
           pageIndex={pageIndex}
           pageOrder={pageOrder}
           rotatePage={rotatePage}
-          getRotation={getRotation}
           removeCurrentPage={removeCurrentPage}
         />
       </div>

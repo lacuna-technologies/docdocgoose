@@ -416,8 +416,30 @@ const remove = async (filePath: string, pageNumber: number) => {
   }
 }
 
+const collect = async (filePath: string, pageNumbers: number[]) => {
+  const {
+    exitCode,
+    stdout,
+    stderr,
+  } = await run([
+    `collect`,
+    `-p`,
+    `${pageNumbers.join(`,`)}`,
+    filePath,
+  ])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    stderr,
+    stdout,
+  }
+}
+
 const PdfCpu = {
   clearStd,
+  collect,
   decrypt,
   getInfo,
   go,

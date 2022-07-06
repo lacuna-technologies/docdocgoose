@@ -17,7 +17,7 @@ const ZoomButton = (
 
 type Props = {
   pageIndex: number,
-  pageOrder: number[],
+  pageOrder: PageInfo[],
   zoomIn: () => void,
   zoomOut: () => void,
 }

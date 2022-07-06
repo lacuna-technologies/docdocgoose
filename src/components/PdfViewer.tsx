@@ -17,10 +17,9 @@ interface Props {
   loadingComponent?: React.ReactElement,
   onDocumentLoad: DocumentProps[`onLoadSuccess`],
   pageIndex: number,
-  pageOrder: number[],
-  setCurrentPage: (p: number) => void,
-  rotatePage: (n: number) => void,
-  getRotation: (n: number) => number
+  pageOrder: PageInfo[],
+  setCurrentPage: (pageIndex: number) => void,
+  rotatePage: (pageIndex: number) => void,
   removeCurrentPage: () => void,
 }
 
@@ -31,7 +30,6 @@ const PdfViewer: React.FC<Props> = ({
   pageIndex,
   pageOrder,
   setCurrentPage,
-  getRotation,
   rotatePage,
   removeCurrentPage,
 }) => {
@@ -97,12 +95,12 @@ const PdfViewer: React.FC<Props> = ({
         >
           {
             (Array.isArray(pageOrder) && numPages > 0) && (
-              pageOrder.map((num, index) => {
+              pageOrder.map(({ pageNumber, rotation }, index) => {
                 return (
                   <MainPage
-                    key={`main-page-${num}`}
+                    key={`main-page-${pageNumber}`}
                     pageIndex={index}
-                    rotation={getRotation(index)}
+                    rotation={rotation}
                     scale={computedScale}
                     setPageHeight={setPageHeight}
                     setPageWidth={setPageWidth}
@@ -125,14 +123,14 @@ const PdfViewer: React.FC<Props> = ({
       >
         {
           (Array.isArray(pageOrder) && numPages > 0) && (
-            pageOrder.map((num, index) => {
+            pageOrder.map(({ pageNumber, rotation }, index) => {
               return (
                 <MiniPage
-                  key={`mini-page-${num}`}
+                  key={`mini-page-${pageNumber}`}
                   current={index === pageIndex}
                   pageIndex={index}
                   setCurrentPage={setCurrentPage}
-                  rotation={getRotation(index)}
+                  rotation={rotation}
                 />
               )
             })

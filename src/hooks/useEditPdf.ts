@@ -5,11 +5,11 @@ import { downloadBlob } from 'utils/Utils'
 const useEditPdf = (
   {
     file,
-    rotations,
+    pageOrder,
   }:
   {
     file: File,
-    rotations: number[],
+    pageOrder: PageInfo[],
   }
 ) => {
   const [editing, setEditing] = useState(false)
@@ -20,11 +20,12 @@ const useEditPdf = (
     const filePath = `/${file.name}`
     globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
-      // TODO: run page re-orgs and deletions too
-      for(const [index, angle] of rotations.entries()){
+      await PdfCpu.collect(filePath, pageOrder.map(({ pageNumber }) => pageNumber))
+
+      for(const [index, { rotation }] of pageOrder.entries()){
         const pageNumber = index + 1
-        if(angle !== 0){
-          await PdfCpu.rotate(filePath, pageNumber, angle)
+        if(rotation !== 0){
+          await PdfCpu.rotate(filePath, pageNumber, rotation)
         }
       }
       const outBuffer = globalThis.fs.readFileSync(filePath)
@@ -35,7 +36,7 @@ const useEditPdf = (
     } finally {
       setEditing(false)
     }
-  }, [file, rotations])
+  }, [file, pageOrder])
 
   return {
     editing,

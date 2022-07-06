@@ -65,11 +65,11 @@
       if (prop in target && target[prop] instanceof Function) {
         return function (...args) {
           if (prop.slice(-8) !== `Original`) {
-            console.debug(prop, `called with`, args)
+            // console.debug(prop, `called with`, args)
             const originalCallback = args.slice(-1)[0]
             if (originalCallback instanceof Function) {
               args[args.length - 1] = function (...newArgs) {
-                console.debug(`callback for:`, prop, `called with`, newArgs)
+                // console.debug(`callback for:`, prop, `called with`, newArgs)
                 return Reflect.apply(originalCallback, newArgs.callee, newArgs)
               }
             }
