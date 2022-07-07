@@ -2,15 +2,6 @@
 
 A web app for editing your documents (PDF, Microsoft Word DOCX, etc). DocsTogether processes your documents on your computer without your documents ever being uploaded. No need to install any PDF editing software, and your files never leave your computer.
 
-DocsTogether supports the following features:
-
-- [x] Removing security or encryption on documents, including restrictions on editing or highlighting, without requiring the owner password
-- [ ] Deleting one or more pages from documents
-- [ ] Rotating one or more pages in documents
-- [ ] Merging one or more PDF files
-- [x] Optimising and reducing the file size of a PDF file
-- [ ] Running optical character recognition (OCR) on a PDF file such that the text in the file becomes selectable and highlightable
-
 ## Development
 
 Ensure you have Node.JS installed.
@@ -21,7 +12,7 @@ DocsTogether uses [pdfcpu](https://github.com/pdfcpu/pdfcpu), a PDF processing l
 
 To run the WASM module in NodeJS, `cd` into the `public/wasm` folder and run `node node_wasm.js`.
 
-Current `pdfcpu` commit: [11d755a41bcb605c55e2727ab7608a93cb889224](https://github.com/pdfcpu/pdfcpu/commit/11d755a41bcb605c55e2727ab7608a93cb889224)
+Current `pdfcpu` commit: [b9818b8a01eaaa742ef42cb9982fa4661445453e](https://github.com/pdfcpu/pdfcpu/commit/b9818b8a01eaaa742ef42cb9982fa4661445453e)
 
 ## Browser Support
 
