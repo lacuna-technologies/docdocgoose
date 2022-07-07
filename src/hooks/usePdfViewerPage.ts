@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect, useRef } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import { moveArrayItem } from 'utils/Utils'
 
 const DEFAULT_PAGE_WIDTH = 500
 const DEFAULT_PAGE_HEIGHT = 500
@@ -74,6 +75,10 @@ const usePdfViewerPage = () => {
     return pageOrder[pageIndex]?.rotation || 0
   }, [pageOrder])
 
+  const movePage = useCallback((pageIndex: number, newPageIndex: number) => {
+    setPageOrder(arr => moveArrayItem(arr, pageIndex, newPageIndex))
+  }, [])
+
   useEffect(() => {
     const onResize = () => { zoomFullWidth() }
     window.addEventListener(`resize`, onResize)
@@ -85,6 +90,7 @@ const usePdfViewerPage = () => {
   return {
     documentRef,
     getRotation,
+    movePage,
     onDocumentLoad,
     pageIndex,
     pageOrder,

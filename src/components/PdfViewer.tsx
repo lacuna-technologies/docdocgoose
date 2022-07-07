@@ -11,6 +11,7 @@ import LeftSideBar from './edit/leftSidebar'
 interface Props {
   file: File,
   loadingComponent?: React.ReactElement,
+  movePage: (pageIndex: number, newPageIndex: number) => void,
   onDocumentLoad: DocumentProps[`onLoadSuccess`],
   pageIndex: number,
   pageOrder: PageInfo[],
@@ -26,6 +27,7 @@ interface Props {
 const PdfViewer: React.FC<Props> = ({
   file,
   loadingComponent,
+  movePage,
   onDocumentLoad,
   pageIndex,
   pageOrder,
@@ -61,6 +63,8 @@ const PdfViewer: React.FC<Props> = ({
         pageIndex={pageIndex}
         removeCurrentPage={removeCurrentPage}
         rotatePage={rotatePage}
+        numPages={numPages}
+        movePage={movePage}
       />
       <div className="flex flex-col max-w-full overflow-hidden grow">
         <Document
@@ -77,7 +81,7 @@ const PdfViewer: React.FC<Props> = ({
                 return (
                   <MainPage
                     key={`main-page-${pageNumber}`}
-                    pageIndex={index}
+                    pageIndex={pageNumber - 1}
                     rotation={rotation}
                     scale={computedScale}
                     setPage={setPage}
@@ -107,7 +111,7 @@ const PdfViewer: React.FC<Props> = ({
                 <MiniPage
                   key={`mini-page-${pageNumber}`}
                   current={index === pageIndex}
-                  pageIndex={index}
+                  pageIndex={pageNumber - 1}
                   selectPage={selectPage}
                   rotation={rotation}
                 />

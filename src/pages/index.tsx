@@ -51,7 +51,7 @@ const Home: NextPage = () => {
               />
               <Feature
                 title="Organise"
-                content="Rearrange, delete, or rotate pages, or merge documents (coming soon)"
+                content="Rearrange, delete, or rotate pages"
               />
               <Feature
                 title="Optimise"
