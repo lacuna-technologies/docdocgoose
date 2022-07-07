@@ -18,7 +18,7 @@ const useOptimisePdf = ({ file }: { file: File }) => {
     globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
       const { outPath } = await PdfCpu.optimise(filePath)
-      const outBuffer = globalThis.fs.readFileSync(outPath)
+      const outBuffer: Buffer = globalThis.fs.readFileSync(outPath)
       const blob = new Blob([outBuffer])
       const f = new File([outBuffer], file.name)
       Storage.setFile(f)

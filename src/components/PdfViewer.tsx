@@ -2,11 +2,11 @@ import React, { useCallback } from 'react'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import type { DocumentProps, PDFPageProxy } from 'react-pdf'
-import MiniPage from 'components/edit/miniPage'
-import MainPage from 'components/edit/mainPage'
-import DocumentBottomBar from 'components/edit/documentBottomBar'
+import MiniPage from 'components/pdf/edit/miniPage'
+import MainPage from 'components/pdf/edit/mainPage'
+import DocumentBottomBar from 'components/pdf/edit/documentBottomBar'
 import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
-import LeftSideBar from './edit/leftSidebar'
+import LeftSideBar from 'components/pdf/edit/leftSidebar'
 
 interface Props {
   file: File,

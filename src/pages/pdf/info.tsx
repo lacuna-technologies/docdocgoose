@@ -1,7 +1,7 @@
 import { PrimaryButton, SecondaryButton } from 'components/button'
-import InfoField from 'components/info/InfoField'
+import InfoField from 'components/pdf/info/InfoField'
 import Spinner from 'components/spinner'
-import useFileInfo from 'hooks/useFileInfo'
+import usePdfInfo from 'hooks/usePdfInfo'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect } from 'react'
@@ -29,11 +29,11 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
     setNewFileInfo,
     savingFileInfo,
     saveFileInfo,
-  } = useFileInfo({ file, wasmLoaded })
+  } = usePdfInfo({ file, wasmLoaded })
 
   useEffect(() => {
     if(fileInfo.encrypted){
-      router.replace(`/view`)
+      router.replace(`/pdf/view`)
     }
   }, [fileInfo, router])
 

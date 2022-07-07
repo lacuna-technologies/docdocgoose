@@ -36,10 +36,13 @@
   },
   "dependencies": {
     "browserfs": "^1.4.3",
+    "fast-xml-parser": "^4.0.8",
+    "jszip": "^3.10.0",
     "next": "^12.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.2",
-    "react-pdf": "^5.7.2"
+    "react-pdf": "^5.7.2",
+    "unzipper": "^0.10.11"
   }
 }

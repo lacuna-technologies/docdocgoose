@@ -6,6 +6,7 @@ import DropZone from 'components/dropzone'
 import Storage from 'utils/Storage'
 import { useRouter } from 'next/router'
 import Spinner from 'components/spinner'
+import { ContentTypes } from 'utils/Constants'
 
 const Feature = ({ title, content }) => {
   return (
@@ -21,16 +22,28 @@ const Home: NextPage = () => {
   const [dropped, setDropped] = useState(false)
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if(acceptedFiles.length !== 1){
-      window.alert(`Please select only one PDF file`)
+      window.alert(`Please select only one file`)
       return
     }
+
     setDropped(true)
-    Storage.setFile(acceptedFiles[0])
-    router.push(`/view`)
+
+    const file = acceptedFiles[0]
+    if([ContentTypes.pdf, ContentTypes.docx].includes(file.type)){
+      Storage.setFile(file)
+      if(file.type === ContentTypes.pdf){
+        router.push(`/pdf/view`)
+      } else if (file.type === ContentTypes.docx){
+        router.push(`/doc/view`)
+      }
+    } else {
+      return window.alert(`Invalid file type`)
+    }
+    
   }, [router])
 
   useEffect(() => {
-    router.prefetch(`/view`)
+    router.prefetch(`/pdf/view`)
   }, [router])
   
   return (
@@ -39,8 +52,8 @@ const Home: NextPage = () => {
       <div className="container max-w-screen-lg mx-auto py-8 px-4 grow">
         <div className="flex md:flex-row flex-col gap-4">
           <div className="basis-2/3">
-            <h2 className="text-3xl font-bold">Edit PDFs,<br />directly in your browser</h2>
-            <ul className="mt-6">
+            <h2 className="text-3xl font-bold">Edit documents<br />directly in your browser</h2>
+            <ul className="mt-6 leading-snug">
               <Feature
                 title="Restrictions"
                 content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting"

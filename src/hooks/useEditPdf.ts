@@ -29,7 +29,7 @@ const useEditPdf = (
           await PdfCpu.rotate(filePath, pageNumber, rotation)
         }
       }
-      const outBuffer = globalThis.fs.readFileSync(filePath)
+      const outBuffer: Buffer = globalThis.fs.readFileSync(filePath)
       const blob = new Blob([outBuffer])
       const f = new File([outBuffer], file.name)
       Storage.setFile(f)

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { PrimaryButton } from 'components/button'
-import OptimiseButton from 'components/view/optimiseButton'
+import OptimiseButton from 'components/pdf/view/optimiseButton'
 
 const SectionTitle = ({ children }) => {
   return <strong className="text-sm uppercase">{children}</strong>

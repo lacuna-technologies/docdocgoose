@@ -17,7 +17,7 @@ const useDecryptPdf = ({ file, reloadFile }: { file: File, reloadFile: () => voi
     globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
       await PdfCpu.decrypt(filePath)
-      const outBuffer = globalThis.fs.readFileSync(filePath)
+      const outBuffer: Buffer = globalThis.fs.readFileSync(filePath)
       const blob = new Blob([outBuffer])
       const f = new File([outBuffer], file.name)
       Storage.setFile(f)

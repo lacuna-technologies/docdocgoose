@@ -22,7 +22,7 @@ const Edit: NextPage<Props> = () => {
 
   useEffect(() => {
     if(!file){
-      router.replace(`/edit`)
+      router.replace(`/pdf/edit`)
     }
   }, [file, router])
 

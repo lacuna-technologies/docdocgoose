@@ -5,7 +5,7 @@ import PdfCpu from 'utils/PdfCpu'
 import Storage from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
 
-const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) => {
+const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) => {
   const router = useRouter()
 
   const [fileLoaded, setFileLoaded] = useState(false)
@@ -65,7 +65,7 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
     globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
     try {
       await PdfCpu.setProperties(filePath, newFileInfo)
-      const outBuffer = globalThis.fs.readFileSync(filePath)
+      const outBuffer: Buffer = globalThis.fs.readFileSync(filePath)
       const blob = new Blob([outBuffer])
       const f = new File([outBuffer], file.name)
       Storage.setFile(f)
@@ -91,4 +91,4 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
   }
 }
 
-export default useFileInfo
+export default usePdfInfo

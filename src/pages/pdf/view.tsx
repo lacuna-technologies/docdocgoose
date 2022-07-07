@@ -6,20 +6,13 @@ import { SecondaryButton } from 'components/button'
 import Storage from 'utils/Storage'
 import type { NextPage } from 'next'
 import { humanFileSize } from 'utils/Utils'
-import useFileInfo from 'hooks/useFileInfo'
+import usePdfInfo from 'hooks/usePdfInfo'
 import FileInfoDetails from 'components/fileInfoDetails'
 import Spinner from 'components/spinner'
 import { InfoAdmonition } from 'components/admonition'
 import { useRouter } from 'next/router'
-import DecryptButton from 'components/view/decryptButton'
-
-const Attribute = ({ children }) => {
-  return (
-    <small className="after:ml-2 after:content-['·'] last-of-type:after:content-[''] last-of-type:after:ml-0">
-      {children}
-    </small>
-  )
-}
+import DecryptButton from 'components/pdf/view/decryptButton'
+import FileAttribute from 'components/FileAttribute'
 
 interface Props {
   wasmLoaded: boolean
@@ -40,16 +33,16 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
     error,
     fileInfo,
     reloadFile,
-  } = useFileInfo({ file, wasmLoaded })
+  } = usePdfInfo({ file, wasmLoaded })
 
   useEffect(() => {
     if(file && fileInfo.encrypted === false){
-      router.replace(`/edit`)
+      router.replace(`/pdf/edit`)
     }
   }, [file, fileInfo, router])
 
   useEffect(() => {
-    router.prefetch(`/edit`)
+    router.prefetch(`/pdf/edit`)
   }, [router])
 
   return (
@@ -71,13 +64,11 @@ const View: NextPage<Props> = ({ wasmLoaded }) => {
                     {file.name}
                   </h1>
                   <div className="flex gap-x-2">
-                    <Attribute>{humanFileSize(file.size)}</Attribute>
+                    <FileAttribute>{humanFileSize(file.size)}</FileAttribute>
                     {(fileInfo.pageCount && Number.isInteger(fileInfo.pageCount)) &&
-                      <Attribute>{fileInfo.pageCount} pages</Attribute>}
+                      <FileAttribute>{fileInfo.pageCount} pages</FileAttribute>}
                     {typeof fileInfo.encrypted !== `undefined` &&
-                      <Attribute>{fileInfo.encrypted ? `Encrypted` : `Not encrypted`}</Attribute>}
-                    {/* {fileInfo.permissions &&
-                      <Attribute>{fileInfo.permissions}</Attribute>} */}
+                      <FileAttribute>{fileInfo.encrypted ? `Encrypted` : `Not encrypted`}</FileAttribute>}
                   </div>
                 </div>
               </div>
