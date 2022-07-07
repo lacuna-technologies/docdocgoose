@@ -47,7 +47,7 @@ const Edit: NextPage<Props> = () => {
             ◀️<span className="hidden md:inline-block">&nbsp;Pick another file</span>
           </SecondaryButton>
           <div className="text-center truncate overflow-x-auto">
-            {file.name}
+            {file?.name}
           </div>
           <PrimaryButton
             onClick={saveFile}

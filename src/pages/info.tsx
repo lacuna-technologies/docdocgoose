@@ -27,7 +27,15 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
     error,
     fileInfo,
     setNewFileInfo,
+    savingFileInfo,
+    saveFileInfo,
   } = useFileInfo({ file, wasmLoaded })
+
+  useEffect(() => {
+    if(fileInfo.encrypted){
+      router.replace(`/view`)
+    }
+  }, [fileInfo, router])
 
   const onChangeField = useCallback((key: string, value: string) => {
     setNewFileInfo(info => ({
@@ -47,6 +55,8 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
             ◀️ Back
           </SecondaryButton>
           <PrimaryButton
+            onClick={saveFileInfo}
+            loading={savingFileInfo}
             loadingComponent={
               <Spinner>Saving changes</Spinner>
             }
@@ -58,6 +68,25 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
         {
           fileLoaded ? (
             <div className="flex flex-col gap-2 overflow-auto grow py-4">
+              <InfoField
+                label="Title"
+                value={fileInfo.title}
+                onChangeField={onChangeField}
+                infoKey="title"
+              />
+              <InfoField
+                label="Author"
+                value={fileInfo.author}
+                onChangeField={onChangeField}
+                infoKey="author"
+              />
+              <InfoField
+                label="Subject"
+                value={fileInfo.subject}
+                onChangeField={onChangeField}
+                infoKey="subject"
+              />
+              
               <InfoField
                 label="File Name"
                 value={file.name}
@@ -83,22 +112,17 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
                 value={fileInfo.modificationDate}
               />
               <InfoField
-                label="Title"
-                value={fileInfo.title}
-                onChangeField={onChangeField}
-                infoKey="title"
+                label="PDF Producer"
+                value={fileInfo.pdfProducer}
               />
               <InfoField
-                label="Author"
-                value={fileInfo.author}
-                onChangeField={onChangeField}
-                infoKey="author"
+                label="Content Creator"
+                value={fileInfo.contentCreator}
               />
+              
               <InfoField
-                label="Subject"
-                value={fileInfo.subject}
-                onChangeField={onChangeField}
-                infoKey="subject"
+                label="Properties"
+                value={fileInfo.properties}
               />
             </div>
           ) : (

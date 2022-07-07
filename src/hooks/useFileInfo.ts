@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import type { FileInfo } from 'utils/PdfCpu'
 import PdfCpu from 'utils/PdfCpu'
+import Storage from 'utils/Storage'
+import { downloadBlob } from 'utils/Utils'
 
 const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) => {
   const router = useRouter()
@@ -10,6 +12,7 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
   const [error, setError] = useState(null as string)
   const [fileInfo, setFileInfo] = useState({} as FileInfo)
   const [newFileInfo, setNewFileInfo] = useState({} as FileInfo)
+  const [savingFileInfo, setSavingFileInfo] = useState(false)
 
   useEffect(() => {
     if(fileLoaded){ // only run once
@@ -55,6 +58,25 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
     setError(null)
   }, [])
 
+  const saveFileInfo = useCallback(async () => {
+    setSavingFileInfo(true)
+    const arrayBuffer = await file.arrayBuffer()
+    const filePath = `/${file.name}`
+    globalThis.fs.writeFileSync(filePath, Buffer.from(arrayBuffer))
+    try {
+      await PdfCpu.setProperties(filePath, newFileInfo)
+      const outBuffer = globalThis.fs.readFileSync(filePath)
+      const blob = new Blob([outBuffer])
+      const f = new File([outBuffer], file.name)
+      Storage.setFile(f)
+      downloadBlob(blob, filePath.slice(1).replace(/\.pdf$/, `-edited.pdf`))
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setSavingFileInfo(false)
+    }
+  }, [file, newFileInfo])
+
   return {
     error,
     fileInfo: {
@@ -63,6 +85,8 @@ const useFileInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) 
     },
     fileLoaded,
     reloadFile,
+    saveFileInfo,
+    savingFileInfo,
     setNewFileInfo,
   }
 }

@@ -190,6 +190,30 @@ export type FileInfo = {
   permissions?: string,
 }
 
+const PDF_PROPERTIES = {
+  acroform: `Acroform`,
+  author: `Author`,
+  contentCreator: `Content creator`,
+  creationDate: `Creation date`,
+  encrypted: `Encrypted`,
+  hybrid: `Hybrid`,
+  linearized: `Linearized`,
+  modificationDate: `Modification date`,
+  objectStreams: `Using object streams`,
+  pageCount: `Page count`,
+  pageSize: `Page size`,
+  pdfProducer: `PDF Producer`,
+  pdfVersion: `PDF version`,
+  permissions: `Permissions`,
+  properties: `Properties`,
+  subject: `Subject`,
+  tagged: `Tagged`,
+  thumbnails: `Thumbnails`,
+  title: `Title`,
+  watermarked: `Watermarked`,
+  xrefStreams: `Using XRef streams`,
+}
+
 const getInfo = async (filePath: string): Promise<FileInfo> => {
   const {
     exitCode,
@@ -241,87 +265,87 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
   for(const value of values){
     const [label, data] = value
     switch(label){
-      case `PDF version`: {
+      case PDF_PROPERTIES.pdfVersion: {
         info.pdfVersion = data
         break
       }
-      case `Page count`: {
+      case PDF_PROPERTIES.pageCount: {
         info.pageCount = Number(data)
         break
       }
-      case `Page size`: {
+      case PDF_PROPERTIES.pageSize: {
         info.pageSize = data
         break
       }
-      case `Title`: {
+      case PDF_PROPERTIES.title: {
         info.title = data
         break
       }
-      case `Author`: {
+      case PDF_PROPERTIES.author: {
         info.author = data
         break
       }
-      case `Subject`: {
+      case PDF_PROPERTIES.subject: {
         info.subject = data
         break
       }
-      case `PDF producer`: {
+      case PDF_PROPERTIES.pdfProducer: {
         info.pdfProducer = data
         break
       }
-      case `Content creator`: {
+      case PDF_PROPERTIES.contentCreator: {
         info.contentCreator = data
         break
       }
-      case `Creation date`: {
+      case PDF_PROPERTIES.creationDate: {
         info.creationDate = data
         break
       }
-      case `Modification date`: {
+      case PDF_PROPERTIES.modificationDate: {
         info.modificationDate = data
         break
       }
-      case `Properties`: {
+      case PDF_PROPERTIES.properties: {
         info.properties = data
         break
       }
-      case `Tagged`: {
+      case PDF_PROPERTIES.tagged: {
         info.tagged = booleanise(data)
         break
       }
-      case `Hybrid`: {
+      case PDF_PROPERTIES.hybrid: {
         info.hybrid = booleanise(data)
         break
       }
-      case `Linearized`: {
+      case PDF_PROPERTIES.linearized: {
         info.linearized = booleanise(data)
         break
       }
-      case `Using XRef streams`: {
+      case PDF_PROPERTIES.xrefStreams: {
         info.xrefStreams = booleanise(data)
         break
       }
-      case `Using object streams`: {
+      case PDF_PROPERTIES.objectStreams: {
         info.objectStreams = booleanise(data)
         break
       }
-      case `Watermarked`: {
+      case PDF_PROPERTIES.watermarked: {
         info.watermarked = booleanise(data)
         break
       }
-      case `Thumbnails`: {
+      case PDF_PROPERTIES.thumbnails: {
         info.thumbnails = booleanise(data)
         break
       }
-      case `AcroForm`: {
+      case PDF_PROPERTIES.acroform: {
         info.acroform = booleanise(data)
         break
       }
-      case `Encrypted`: {
+      case PDF_PROPERTIES.encrypted: {
         info.encrypted = booleanise(data)
         break
       }
-      case `Permissions`: {
+      case PDF_PROPERTIES.permissions: {
         info.permissions = data
         break
       }
@@ -437,6 +461,33 @@ const collect = async (filePath: string, pageNumbers: number[]) => {
   }
 }
 
+const setProperties = async (filePath: string, fileInfo: FileInfo) => {
+  const properties = Object.entries(fileInfo).reduce((acc, [key, value]) => {
+    return [
+      ...acc,
+      `${PDF_PROPERTIES[key]} = ${value}`,
+    ]
+  }, [])
+  const {
+    exitCode,
+    stdout,
+    stderr,
+  } = await run([
+    `properties`,
+    `add`,
+    filePath,
+    ...properties,
+  ])
+  if(exitCode === 1 || exitCode === 2){
+    throw new Error(stderr.join(`\n`))
+  }
+  return {
+    exitCode,
+    stderr,
+    stdout,
+  }
+}
+
 const PdfCpu = {
   clearStd,
   collect,
@@ -448,6 +499,7 @@ const PdfCpu = {
   rotate,
   run,
   setGo,
+  setProperties,
 }
 
 export default PdfCpu

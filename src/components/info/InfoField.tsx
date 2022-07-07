@@ -16,7 +16,7 @@ const InfoField: React.FC<Props> = ({ label, value, infoKey, onChangeField }) =>
 
   return (
     <div className="flex md:flex-row flex-col">
-      <label className="w-32 py-2">{label}</label>
+      <label className="w-40 py-2">{label}</label>
       <input
         className={`px-4 py-2 grow outline-none ${inputClass}`}
         type="text"

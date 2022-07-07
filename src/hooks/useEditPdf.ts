@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import PdfCpu from 'utils/PdfCpu'
+import Storage from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
 
 const useEditPdf = (
@@ -30,6 +31,8 @@ const useEditPdf = (
       }
       const outBuffer = globalThis.fs.readFileSync(filePath)
       const blob = new Blob([outBuffer])
+      const f = new File([outBuffer], file.name)
+      Storage.setFile(f)
       downloadBlob(blob, filePath.slice(1).replace(/\.pdf$/, `-edited.pdf`))
     } catch (error){
       console.error(error)
