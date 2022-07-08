@@ -4,10 +4,11 @@ import type { DropzoneOptions } from 'react-dropzone'
 import { ContentTypes } from 'utils/Constants'
 
 interface Props {
-  onDrop: DropzoneOptions[`onDrop`]
+  onDrop: DropzoneOptions[`onDrop`],
+  className?: string,
 }
 
-const DropZone: React.FC<Props> = ({ onDrop }) => {
+const DropZone: React.FC<Props> = ({ onDrop, className = `` }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       [ContentTypes.pdf]: [`.pdf`],
@@ -20,7 +21,7 @@ const DropZone: React.FC<Props> = ({ onDrop }) => {
   })
 
   return (
-    <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer border-2 border-dotted border-slate-400 outline-none" {...getRootProps()}>
+    <div className={`flex flex-col justify-center items-center p-4 text-center bg-slate-300 cursor-pointer border-2 border-dotted border-slate-400 outline-none ${className}`} {...getRootProps()}>
       <input {...getInputProps()} />
       {isDragActive
         ? (
@@ -29,11 +30,11 @@ const DropZone: React.FC<Props> = ({ onDrop }) => {
         : (
           <>
             <div className="md:block hidden">
-              <p>Drag and drop your file here</p>
+              <p>Drop your .pdf or .docx file here</p>
               <p className="text-sm">(or click to select a file from your computer)</p>
             </div>
             <div className="md:hidden block">
-              <p>Tap here to select a file</p>
+              <p>Tap here to select a .pdf or .docx file</p>
             </div>
           </>
         )

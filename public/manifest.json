@@ -1,0 +1,8 @@
+{
+  "name": "DocsTogether",
+  "short_name": "DocsTogether",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e293b1a",
+  "description": "A web app for editing your documents on your computer without ever uploading them"
+}

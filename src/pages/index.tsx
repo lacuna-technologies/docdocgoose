@@ -11,8 +11,8 @@ import { ContentTypes } from 'utils/Constants'
 const Feature = ({ title, content }) => {
   return (
     <li className="mb-4">
-      <small className="text-sm uppercase font-bold text-slate-700">{title}</small>
-      <p>{content}</p>
+      <p className="uppercase font-bold text-slate-700">{title}</p>
+      <p className="mt-2">{content}</p>
     </li>
   )
 }
@@ -51,37 +51,33 @@ const Home: NextPage = () => {
       <Header />
       <div className="container max-w-screen-lg mx-auto py-8 px-4 grow">
         <div className="flex md:flex-row flex-col gap-4">
-          <div className="basis-2/3">
+          <div className="basis-3/5">
             <h2 className="text-3xl font-bold">Edit documents<br />directly in your browser</h2>
             <ul className="mt-6 leading-snug">
               <Feature
-                title="Restrictions"
-                content="Remove security, encryption, and other protections from documents, including annoying restrictions on editing or highlighting"
+                title="🔓 Restrictions"
+                content="Remove restrictions on editing or highlighting."
               />
               <Feature
-                title="Edit"
-                content="Add text, images, and other content to your documents (coming soon)"
+                title="📁 Organise"
+                content="Rearrange, delete, or rotate pages."
               />
               <Feature
-                title="Organise"
-                content="Rearrange, delete, or rotate pages"
+                title="🪄 Optimise"
+                content="Reduce the size of your document."
               />
               <Feature
-                title="Optimise"
-                content="Reduce the size of your document"
-              />
-              <Feature
-                title="OCR"
-                content="Make the text in your document selectable and highlightable (coming soon)"
+                title="💻 Offline"
+                content="All processing happens right here, not on the cloud. Your documents never leave your computer."
               />
             </ul>
           </div>
           {dropped ? (
-            <div className="basis-1/3 flex flex-col justify-center items-center p-4 text-center bg-slate-300">
+            <div className="basis-2/5 flex flex-col justify-center items-center p-4 text-center bg-slate-300">
               <Spinner>Loading...</Spinner>
             </div>
           ) : (
-            <DropZone onDrop={onDrop} />
+            <DropZone className="basis-2/5" onDrop={onDrop} />
           )}
         </div>
       </div>
