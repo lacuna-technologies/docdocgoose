@@ -6,7 +6,7 @@ import Spinner from 'components/spinner'
 import useDocInfo from 'hooks/useDocInfo'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Storage from 'utils/Storage'
 import { humanFileSize } from 'utils/Utils'
 
@@ -23,12 +23,9 @@ const View: NextPage = () => {
   const {
     status: docStatus,
     removeEditProtection,
+    unlockTrackChanges,
     saveFile,
   } = useDocInfo({ file })
-
-  const onClickRemoveEditProtection = useCallback(async () => {
-    await removeEditProtection()
-  }, [removeEditProtection])
 
   return (
     <div className="bg-slate-200 h-screen flex flex-col">
@@ -62,13 +59,23 @@ const View: NextPage = () => {
               </InfoAdmonition>
             ) : (docStatus === `edit-protected` || docStatus === `edit-protected-loading`) ? (
               <PrimaryButton
-                onClick={onClickRemoveEditProtection}
+                onClick={removeEditProtection}
                 loading={docStatus === `edit-protected-loading`}
                 loadingComponent={
                   <Spinner>Removing edit protection</Spinner>
                 }
               >
                 🔓 Remove edit protection
+              </PrimaryButton>
+            ) : (docStatus === `locked-track-changes` || docStatus === `locked-track-changes-loading`) ? (
+              <PrimaryButton
+                onClick={unlockTrackChanges}
+                loading={docStatus === `locked-track-changes-loading`}
+                loadingComponent={
+                  <Spinner>Unlocking track changes</Spinner>
+                }
+              >
+                🔓 Unlock track changes
               </PrimaryButton>
             ) : (
               <>

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react"
+import Logger from "utils/Logger"
 import PdfCpu from 'utils/PdfCpu'
 import Storage from "utils/Storage"
 
@@ -28,7 +29,7 @@ const useOptimisePdf = ({ file }: { file: File }) => {
         url: URL.createObjectURL(blob),
       })
     } catch (error){
-      console.error(error)
+      Logger.error(error)
     } finally {
       setOptimising(false)
     }

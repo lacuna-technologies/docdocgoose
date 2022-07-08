@@ -1,4 +1,5 @@
 import { configure, BFSRequire } from 'browserfs'
+import Logger from './Logger'
 
 let bfs,
     go = null,
@@ -46,11 +47,11 @@ globalThis.fs.write = (fd, buf, offset, length, position, callback) => {
       // TODO: do not print in production
       if(fd === 1){
         // stdout
-        console.log(outputBuf.slice(0, nl))
+        Logger.log(outputBuf.slice(0, nl))
         stdout.push(outputBuf.slice(0, nl))
       } else {
         // stderr
-        console.error(outputBuf.slice(0, nl))
+        Logger.error(outputBuf.slice(0, nl))
         stderr.push(outputBuf.slice(0, nl))
       }
       outputBuf = outputBuf.slice(nl + 1)
@@ -94,8 +95,8 @@ globalThis.fs.open = (path, flags, mode, callback) => {
       currentFlags = `r+`
     }
   } else {
-    console.log(`flags`, flags)
-    console.error(`Unimplemented open flags`)
+    Logger.log(`flags`, flags)
+    Logger.error(`Unimplemented open flags`)
   }
   return globalThis.fs.openOriginal(path, currentFlags, mode, callback)
 }

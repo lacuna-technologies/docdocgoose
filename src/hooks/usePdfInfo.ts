@@ -4,6 +4,7 @@ import type { FileInfo } from 'utils/PdfCpu'
 import PdfCpu from 'utils/PdfCpu'
 import Storage from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
+import Logger from 'utils/Logger'
 
 const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) => {
   const router = useRouter()
@@ -22,7 +23,7 @@ const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) =
       router.push(`/`)
     }
     if(wasmLoaded && PdfCpu.go === null){
-      console.debug(`go is not yet defined`)
+      Logger.debug(`go is not yet defined`)
       return
     }
     (async () => {
@@ -41,7 +42,7 @@ const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) =
               encrypted: true,
             })
           } else {
-            console.error(error)
+            Logger.error(error)
             setError(`Something went wrong when processing your file`)
           }
         } finally {
@@ -71,7 +72,7 @@ const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) =
       Storage.setFile(f)
       downloadBlob(blob, filePath.slice(1).replace(/\.pdf$/, `-edited.pdf`))
     } catch (error) {
-      console.error(error)
+      Logger.error(error)
     } finally {
       setSavingFileInfo(false)
     }

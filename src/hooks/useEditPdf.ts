@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import Logger from 'utils/Logger'
 import PdfCpu from 'utils/PdfCpu'
 import Storage from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
@@ -35,7 +36,7 @@ const useEditPdf = (
       Storage.setFile(f)
       downloadBlob(blob, filePath.slice(1).replace(/\.pdf$/, `-edited.pdf`))
     } catch (error){
-      console.error(error)
+      Logger.error(error)
     } finally {
       setEditing(false)
     }

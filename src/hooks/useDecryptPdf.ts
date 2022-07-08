@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react"
+import Logger from "utils/Logger"
 import PdfCpu from 'utils/PdfCpu'
 import Storage from 'utils/Storage'
 
@@ -27,7 +28,7 @@ const useDecryptPdf = ({ file, reloadFile }: { file: File, reloadFile: () => voi
       })
       reloadFile()
     } catch (error) {
-      console.error(error)
+      Logger.error(error)
     } finally {
       setDecrypting(false)
     }
