@@ -9,6 +9,7 @@ import useEditPdf from 'hooks/useEditPdf'
 import usePdfViewerPage from 'hooks/usePdfViewerPage'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import useEditableContent from 'hooks/useEditableContent'
 
 const PdfViewer = dynamic(() => import(`components/PdfViewer`), { ssr: false })
 
@@ -28,6 +29,7 @@ const Edit: NextPage<Props> = () => {
 
   const pageProps = usePdfViewerPage()
 
+  const editableContentProps = useEditableContent()
   const {
     saveFile,
     editing,
@@ -68,6 +70,7 @@ const Edit: NextPage<Props> = () => {
             </div>
           }
           {...pageProps}
+          {...editableContentProps}
         />
       </div>
     </>

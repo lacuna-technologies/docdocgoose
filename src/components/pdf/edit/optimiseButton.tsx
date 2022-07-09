@@ -26,7 +26,7 @@ const OptimiseButton: React.FC = () => {
         }
         title="Reduce the size of your document"
       >
-        🪄 Optimise
+        🪄 Reduce file size
       </PrimaryButton>
     )
   }

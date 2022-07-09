@@ -2,11 +2,12 @@ import React, { useCallback } from 'react'
 import { Document } from 'react-pdf/dist/esm/entry.webpack5'
 import usePdfViewerZoom from 'hooks/usePdfViewerZoom'
 import type { DocumentProps, PDFPageProxy } from 'react-pdf'
-import MiniPage from 'components/pdf/edit/miniPage'
 import MainPage from 'components/pdf/edit/mainPage'
 import DocumentBottomBar from 'components/pdf/edit/documentBottomBar'
 import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
 import LeftSideBar from 'components/pdf/edit/leftSidebar'
+import RightSideBar from './pdf/edit/rightSidebar'
+import EditableContent from './pdf/edit/editableContent'
 
 interface Props {
   file: File,
@@ -22,6 +23,8 @@ interface Props {
   documentRef: React.RefObject<HTMLDivElement>,
   setPage: (pageIndex: number, action: (p: PageInfo) => PageInfo) => void,
   zoomFullWidth: (pageWidth?: number) => void,
+  editableContent: EditableContent[],
+  addBox: () => void,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -38,6 +41,8 @@ const PdfViewer: React.FC<Props> = ({
   scale,
   setPage,
   zoomFullWidth,
+  editableContent,
+  addBox,
 }) => {
   const {
     zoom,
@@ -65,11 +70,12 @@ const PdfViewer: React.FC<Props> = ({
         rotatePage={rotatePage}
         numPages={numPages}
         movePage={movePage}
+        addBox={addBox}
       />
-      <div className="flex flex-col max-w-full overflow-hidden grow">
+      <div className="flex flex-col max-w-full overflow-hidden grow" id="main-document">
         <Document
           file={file}
-          className="grow overflow-auto max-w-full flex flex-col gap-[20px]"
+          className="grow overflow-auto max-w-full flex flex-col gap-[20px] relative"
           loading={loadingComponent}
           onLoadSuccess={onDocumentLoad}
           externalLinkTarget="_blank"
@@ -91,6 +97,10 @@ const PdfViewer: React.FC<Props> = ({
               })
             )
           }
+          <EditableContent
+            bounds="#main-document"
+            editableContent={editableContent}
+          />
         </Document>
         <DocumentBottomBar
           pageIndex={pageIndex}
@@ -100,26 +110,12 @@ const PdfViewer: React.FC<Props> = ({
           zoomFullWidth={zoomFullWidth}
         />
       </div>
-      <Document
+      <RightSideBar
         file={file}
-        className="flex-none flex-col gap-1 overflow-auto ml-4 hidden md:flex"
-      >
-        {
-          (Array.isArray(pageOrder) && numPages > 0) && (
-            pageOrder.map(({ pageNumber, rotation }, index) => {
-              return (
-                <MiniPage
-                  key={`mini-page-${pageNumber}`}
-                  current={index === pageIndex}
-                  pageIndex={pageNumber - 1}
-                  selectPage={selectPage}
-                  rotation={rotation}
-                />
-              )
-            })
-          )
-        }
-      </Document>
+        pageIndex={pageIndex}
+        pageOrder={pageOrder}
+        selectPage={selectPage}
+      />
     </div>
   )
 }

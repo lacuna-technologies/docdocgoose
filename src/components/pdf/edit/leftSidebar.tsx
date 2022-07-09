@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { PrimaryButton } from 'components/button'
-import OptimiseButton from 'components/pdf/view/optimiseButton'
+import OptimiseButton from 'components/pdf/edit/optimiseButton'
 
 const SectionTitle = ({ children }) => {
   return <strong className="text-sm uppercase">{children}</strong>
@@ -12,9 +12,11 @@ type Props = {
   rotatePage: (pageIndex: number) => void,
   removeCurrentPage: () => void,
   movePage: (pageIndex: number, newPageIndex: number) => void,
+  addBox: () => void,
 }
 
 const LeftSideBar: React.FC<Props> = ({
+  addBox,
   movePage,
   numPages,
   pageIndex,
@@ -47,18 +49,33 @@ const LeftSideBar: React.FC<Props> = ({
   }, [pageIndex, numPages, movePage])
 
   return (
-    <div className="flex md:flex-col flex-row md:gap-4 gap-2 md:w-72 px-2 md:px-4">
+    <div className="flex flex-none md:flex-col flex-row md:gap-4 gap-2 md:w-72 px-2 md:px-4 pb-4 overflow-auto bg-slate-200">
       <div>
           <SectionTitle>Page</SectionTitle>
           <div className="grid md:grid-cols-2 grid-cols-1 mt-2 md:gap-2 gap-2">
-          <PrimaryButton onClick={onClickRotate}>
-            🔃 Rotate
+            <PrimaryButton onClick={onClickRotate} title="Rotate the current page clockwise">
+              🔃 Rotate
+            </PrimaryButton>
+            <PrimaryButton onClick={onClickDelete} title="Delete the current page">
+              🗑️ Delete
+            </PrimaryButton>
+            <PrimaryButton onClick={onClickMove} title="Move the current page">
+              ↕️ Move
+            </PrimaryButton>
+          </div>
+      </div>
+
+      <div>
+        <SectionTitle>Edit Content</SectionTitle>
+        <div className="grid md:grid-cols-2 grid-cols-1 mt-2 md:gap-2 gap-2">
+          <PrimaryButton>
+            ✒️ Text
           </PrimaryButton>
-          <PrimaryButton onClick={onClickDelete}>
-            🗑️ Delete
+          <PrimaryButton onClick={addBox}>
+            ⬜ Box
           </PrimaryButton>
-          <PrimaryButton onClick={onClickMove}>
-            ↕️ Move
+          <PrimaryButton>
+            🖼️ Image
           </PrimaryButton>
         </div>
       </div>

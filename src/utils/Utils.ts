@@ -43,3 +43,5 @@ export const moveArrayItem = <T>(array: T[], fromIndex: number, toIndex: number)
   copy.splice(toIndex, 0, el)
   return copy
 }
+
+export const getRandomID = () => `id${(new Date()).getTime()}${Math.random().toString(16).slice(2)}`
