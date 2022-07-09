@@ -6,8 +6,9 @@ import MainPage from 'components/pdf/edit/mainPage'
 import DocumentBottomBar from 'components/pdf/edit/documentBottomBar'
 import usePdfViewerScroll from 'hooks/usePdfViewerScroll'
 import LeftSideBar from 'components/pdf/edit/leftSidebar'
-import RightSideBar from './pdf/edit/rightSidebar'
-import EditableContent from './pdf/edit/editableContent'
+import RightSideBar from './rightSidebar'
+import EditableContent from './editableContent'
+import useEditableContent from 'hooks/useEditableContent'
 
 interface Props {
   file: File,
@@ -23,8 +24,7 @@ interface Props {
   documentRef: React.RefObject<HTMLDivElement>,
   setPage: (pageIndex: number, action: (p: PageInfo) => PageInfo) => void,
   zoomFullWidth: (pageWidth?: number) => void,
-  editableContent: EditableContent[],
-  addBox: () => void,
+  editableContentProps: ReturnType<typeof useEditableContent>,
 }
 
 const PdfViewer: React.FC<Props> = ({
@@ -41,8 +41,7 @@ const PdfViewer: React.FC<Props> = ({
   scale,
   setPage,
   zoomFullWidth,
-  editableContent,
-  addBox,
+  editableContentProps: { addBox, ...editableContentProps},
 }) => {
   const {
     zoom,
@@ -98,8 +97,8 @@ const PdfViewer: React.FC<Props> = ({
             )
           }
           <EditableContent
-            bounds="#main-document"
-            editableContent={editableContent}
+            bounds=".react-pdf__Page[data-page-number='1']"
+            {...editableContentProps}
           />
         </Document>
         <DocumentBottomBar

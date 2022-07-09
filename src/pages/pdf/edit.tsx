@@ -11,7 +11,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import useEditableContent from 'hooks/useEditableContent'
 
-const PdfViewer = dynamic(() => import(`components/PdfViewer`), { ssr: false })
+const PdfViewer = dynamic(() => import(`components/pdf/edit/PdfViewer`), { ssr: false })
 
 interface Props {
   wasmLoaded: boolean
