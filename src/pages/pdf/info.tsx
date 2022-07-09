@@ -49,7 +49,7 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
       <div className="container max-w-screen-lg mx-auto py-4 px-4 flex flex-col overflow-hidden">
         <div className="flex flex-row justify-between mb-4">
           <SecondaryButton
-            href="/edit"
+            href="/pdf/edit"
             className="w-fit"
           >
             ◀️ Back
