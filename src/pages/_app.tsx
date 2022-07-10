@@ -6,7 +6,7 @@ import PdfCpu from 'utils/PdfCpu'
 
 import 'styles/globals.css'
 
-const DocsTogether = ({ Component, pageProps }: AppProps) => {
+const DocDocGoose = ({ Component, pageProps }: AppProps) => {
   const [wasmLoaded, setWasmLoaded] = useState(false)
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
   return (
     <>
     <Head>
-      <title>📄 DocsTogether</title>
+      <title>📄 DocDocGoose</title>
     </Head>
       <Component {
         ...{
@@ -39,11 +39,11 @@ const DocsTogether = ({ Component, pageProps }: AppProps) => {
       </Script>
       <Script
         id="goatcounter"
-        data-goatcounter="https://docs-together.goatcounter.com/count"
+        data-goatcounter="https://stats.docdocgoose.huey.xyz/count"
         async src="//gc.zgo.at/count.js">
       </Script>
     </>
   )
 }
 
-export default DocsTogether
+export default DocDocGoose

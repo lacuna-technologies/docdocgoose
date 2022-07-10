@@ -38,7 +38,7 @@ const Edit: NextPage<Props> = () => {
   return (
     <>
       <Head>
-        <title>{file?.name} | 📄 DocsTogether</title>
+        <title>{file?.name} | 📄 DocDocGoose</title>
       </Head>
       <div className="bg-slate-200 h-full min-h-screen max-h-screen flex flex-col">
         <div className="flex justify-between md:p-4 p-2 gap-2">
