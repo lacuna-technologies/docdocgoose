@@ -7,7 +7,7 @@ const Header = () => {
       <div className="container max-w-screen-lg mx-auto p-4">
         <Link href="/">
           <a className="text-xl font-black no-underline">
-            DocsTogether
+            DocDocGoose
           </a>
         </Link>
       </div>

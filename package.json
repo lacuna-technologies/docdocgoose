@@ -1,5 +1,5 @@
 {
-  "name": "space-together",
+  "name": "DocDocGoose",
   "version": "0.0.1",
   "description": "in-browser editing of documents",
   "main": "index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hueyy/docs-together.git"
+    "url": "git+https://github.com/hueyy/docdocgoose"
   },
   "author": "Huey Lee <hello@huey.xyz>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/hueyy/docs-together/issues"
+    "url": "https://github.com/hueyy/docdocgoose/issues"
   },
-  "homepage": "https://github.com/hueyy/docs-together#readme",
+  "homepage": "https://github.com/hueyy/docdocgoose#readme",
   "devDependencies": {
     "@types/node": "^18.0.1",
     "@types/react": "^18.0.14",
