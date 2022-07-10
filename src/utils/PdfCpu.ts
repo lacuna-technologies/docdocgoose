@@ -167,30 +167,6 @@ const setGo = (value: any) => {
   go = value
 }
 
-export type FileInfo = {
-  pdfVersion?: string,
-  pageCount?: number,
-  pageSize?: string,
-  title?: string,
-  author?: string,
-  subject?: string,
-  pdfProducer?: string,
-  contentCreator?: string,
-  creationDate?: string,
-  modificationDate?: string,
-  properties?: string,
-  tagged?: boolean,
-  hybrid?: boolean,
-  linearized?: boolean,
-  xrefStreams?: boolean,
-  objectStreams?: boolean,
-  watermarked?: boolean,
-  thumbnails?: boolean,
-  acroform?: boolean,
-  encrypted?: boolean,
-  permissions?: string,
-}
-
 const PDF_PROPERTIES = {
   acroform: `Acroform`,
   author: `Author`,
@@ -215,6 +191,35 @@ const PDF_PROPERTIES = {
   xrefStreams: `Using XRef streams`,
 }
 
+export class EncryptedPDFError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = `EncryptedPDFError`
+  }
+}
+
+export class RestrictedPDFError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = `RestrictedPDFError`
+  }
+}
+
+export class InvalidPDFError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = `InvalidPDFError`
+  }
+}
+
+const hasEncryptedPDFError = (stderr: string[]) => stderr.some(l =>
+  l.includes(`pdfcpu: please provide the correct password`)
+)
+
+const hasInvalidPDFError = (stderr: string[]) => stderr.some(l =>
+  l.includes(`Read: xRefTable failed: pdfcpu: headerVersion: corrupt pdf stream - no header version available`)
+)
+
 const getInfo = async (filePath: string): Promise<FileInfo> => {
   const {
     exitCode,
@@ -224,10 +229,16 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
 
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
+  } else if (hasEncryptedPDFError(stderr)) {
+    throw new EncryptedPDFError(`File is encrypted with both owner and user password set`)
   } else if (stderr.some(l => l.includes(`decryptAESBytes: Ciphertext not a multiple of block size`))){
-    throw new Error(`File is encrypted`)
+    throw new RestrictedPDFError(`File is restricted`)
+  } else if (hasInvalidPDFError(stderr)) {
+    throw new InvalidPDFError(`PDF does not conform to the PDF specification and cannot be read. However, it may be viewable in other PDF viewers.`)
   }
-  let info = {} as FileInfo
+  let info = {
+    encrypted: false,
+  } as FileInfo
 
   const booleanise = (val) => {
     if(val === `Yes`){
@@ -343,7 +354,9 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
         break
       }
       case PDF_PROPERTIES.encrypted: {
-        info.encrypted = booleanise(data)
+        // if it can be read, it is restricted not encrypted
+        // in DocDocGoose terminology
+        info.restricted = booleanise(data)
         break
       }
       case PDF_PROPERTIES.permissions: {
@@ -387,8 +400,15 @@ const decrypt = async (filePath: string, userPassword?: string) => {
     ...(userPassword ? [`-upw`, userPassword] : []),
     filePath,
   ])
+
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
+  }
+
+  if (hasEncryptedPDFError(stderr)) {
+    throw new EncryptedPDFError(`PDF remains encrypted, password provided may have been invalid`)
+  } else if (hasInvalidPDFError(stderr)) {
+    throw new InvalidPDFError(`This PDF does not conform to the PDF specification and cannot be read. However, it may be viewable in other PDF viewers.`)
   }
   return {
     exitCode,

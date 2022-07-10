@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import type { FileInfo } from 'utils/PdfCpu'
-import PdfCpu from 'utils/PdfCpu'
+import PdfCpu, { EncryptedPDFError, InvalidPDFError, RestrictedPDFError } from 'utils/PdfCpu'
 import Storage from 'utils/Storage'
 import { downloadBlob } from 'utils/Utils'
 import Logger from 'utils/Logger'
@@ -37,10 +36,18 @@ const usePdfInfo = ({ file, wasmLoaded }: { file: File, wasmLoaded: boolean }) =
           const result = await PdfCpu.getInfo(filePath)
           setFileInfo(result)
         } catch (error){
-          if(error.message === `File is encrypted`){
-            setFileInfo({
+          if(error instanceof EncryptedPDFError) {
+            setFileInfo(r => ({
+              ...r,
               encrypted: true,
-            })
+            }))
+          } else if (error instanceof RestrictedPDFError) {
+            setFileInfo(r => ({
+              ...r,
+              restricted: true,
+            }))
+          } else if(error instanceof InvalidPDFError) {
+            return setError(error.message)
           } else {
             Logger.error(error)
             setError(`Something went wrong when processing your file`)

@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react'
-import type { FileInfo } from 'utils/PdfCpu'
 
 const FileInfoDetails = (
   { className, fileInfo }:
