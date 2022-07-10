@@ -1,21 +1,31 @@
 import React from 'react'
 
-interface InfoAdmonitionProps {
+interface AdmonitionProps {
   className?: string,
   children: React.ReactNode
 }
 
-export const InfoAdmonition: React.FC<InfoAdmonitionProps> = ({ children, className = `` }) => {
+const admonitionClass = `p-4 rounded select-none`
+
+export const InfoAdmonition: React.FC<AdmonitionProps> = ({ children, className = `` }) => {
   return (
-    <div className={`p-4 bg-sky-200 rounded select-none ${className}`}>
+    <div className={`bg-sky-200 ${admonitionClass} ${className}`}>
       {children}
     </div>
   )
 }
 
-export const GeneralAdmonition: React.FC<InfoAdmonitionProps> = ({ children, className = `` }) => {
+export const GeneralAdmonition: React.FC<AdmonitionProps> = ({ children, className = `` }) => {
   return (
-    <div className={`p-4 bg-slate-300 rounded select-none ${className}`}>
+    <div className={`bg-slate-300 ${admonitionClass} ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+export const ErrorAdmonition: React.FC<AdmonitionProps> = ({ children, className = `` }) => {
+  return (
+    <div className={`${admonitionClass} bg-red-200 ${className}`}>
       {children}
     </div>
   )

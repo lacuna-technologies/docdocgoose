@@ -32,7 +32,7 @@ const Info: NextPage<Props> = ({ wasmLoaded }) => {
   } = usePdfInfo({ file, wasmLoaded })
 
   useEffect(() => {
-    if(fileInfo.encrypted){
+    if(fileInfo.encrypted || fileInfo.restricted){
       router.replace(`/pdf/view`)
     }
   }, [fileInfo, router])
