@@ -18,7 +18,7 @@ const DocDocGoose = ({ Component, pageProps }: AppProps) => {
   return (
     <>
     <Head>
-      <title>📄 DocDocGoose</title>
+      <title>DocDocGoose</title>
     </Head>
       <Component {
         ...{

@@ -1,4 +1,9 @@
-# DocDocGoose
+<p align="center">
+  <img src="./public/assets/docdocgoose-logo.png" width="250" />
+</p>
+<h1 align="center">
+  DocDocGoose
+</h1>
 
 A web app for editing your documents (`.pdf`, `.docx`, etc). DocDocGoose processes your documents on your computer without your documents ever being uploaded. No need to install any PDF editing software, and your files never leave your computer.
 

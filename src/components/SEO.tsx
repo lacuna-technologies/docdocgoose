@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 
-const title = `📄 DocDocGoose — Edit documents directly in your browser`
+const title = `DocDocGoose — Edit documents directly in your browser`
 const description = `Remove editing or highlighting restrictions and unlock track changes in your documents. No password required.`
 const url = `https://docdocgoose.huey.xyz`
 
