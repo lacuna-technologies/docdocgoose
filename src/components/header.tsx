@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import Logo from '../../public/assets/docdocgoose-logo.png'
 
 const Header = () => {
   return (
@@ -7,7 +9,7 @@ const Header = () => {
       <div className="container max-w-screen-lg mx-auto p-4">
         <Link href="/">
           <div className="flex gap-2 items-center cursor-pointer">
-            <img src="/assets/docdocgoose-logo.png" className="w-6" />
+            <Image src={Logo} className="w-6" alt="logo" />
             <a className="text-xl font-black no-underline">
               DocDocGoose
             </a>
