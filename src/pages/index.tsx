@@ -80,6 +80,17 @@ const Home: NextPage = () => {
                   title="🪄 Optimise"
                   content="Reduce the size of your document before sending or uploading."
                 />
+                <Feature
+                  title="🔖 Bookmarks"
+                  content={
+                    <p className="mt-2">
+                      (Experimental): Automatically generate bookmarks (also known as an outline) for your PDF document based on the headers in the document. Uses&nbsp;
+                      <a href="https://github.com/hueyy/pdf_scout">pdf_scout</a> and therefore works best with&nbsp;
+                      <a href="https://github.com/hueyy/pdf_scout#supported-document-types">documents supported by pdf_scout</a>.
+                      May not work with other types of documents. May also take a long time (several minutes or more).
+                    </p>
+                  }
+                />
               </ul>
             </div>
             {dropped ? (

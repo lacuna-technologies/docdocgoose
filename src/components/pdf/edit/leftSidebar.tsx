@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import { PrimaryButton } from 'components/button'
-import OptimiseButton from 'components/pdf/view/optimiseButton'
+import OptimiseButton from './optimiseButton'
+import GenerateBookmarksButton from './GenerateBookmarksButton'
 
 const SectionTitle = ({ children }) => {
   return <strong className="text-sm uppercase">{children}</strong>
@@ -67,6 +68,7 @@ const LeftSideBar: React.FC<Props> = ({
         <SectionTitle>General</SectionTitle>
         <div className="grid grid-cols-1 mt-2 md:gap-4 gap-2">
           <OptimiseButton />
+          <GenerateBookmarksButton />
         </div>
       </div>
       

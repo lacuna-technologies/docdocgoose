@@ -3,17 +3,22 @@ import Script from 'next/script'
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import PdfCpu from 'utils/PdfCpu'
+import PdfScout from 'utils/PdfScout'
 
 import 'styles/globals.css'
 
 const DocDocGoose = ({ Component, pageProps }: AppProps) => {
-  const [wasmLoaded, setWasmLoaded] = useState(false)
+  const [wasmGoLoaded, setWasmGoLoaded] = useState(false)
+  const [wasmPythonLoaded, setWasmPythonLoaded] = useState(false)
 
   useEffect(() => {
-    if(wasmLoaded && PdfCpu.go === null){
+    if(wasmGoLoaded && PdfCpu.go === null){
       PdfCpu.setGo(new Go())
     }
-  }, [wasmLoaded])
+    if(wasmPythonLoaded){
+      PdfScout.init()
+    }
+  }, [wasmGoLoaded, wasmPythonLoaded])
 
   return (
     <>
@@ -25,15 +30,23 @@ const DocDocGoose = ({ Component, pageProps }: AppProps) => {
           ...pageProps,
           app: {
             go: PdfCpu.go,
-            wasmLoaded,
+            wasmLoaded: wasmGoLoaded && wasmPythonLoaded,
           },
         }}
       />
       <Script
-        id="wasm"
-        src="/wasm/wasm_exec.js"
+        id="wasm_go"
+        src="/wasm/golang/wasm_exec.js"
         onLoad={() => {
-          setWasmLoaded(true)
+          setWasmGoLoaded(true)
+        }}
+      >
+      </Script>
+      <Script
+        id="wasm_python"
+        src="/wasm/pyodide/pyodide.js"
+        onLoad={() => {
+          setWasmPythonLoaded(true)
         }}
       >
       </Script>

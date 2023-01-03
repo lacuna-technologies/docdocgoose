@@ -9,10 +9,10 @@ const Header = () => {
       <div className="container max-w-screen-lg mx-auto p-4">
         <Link href="/">
           <div className="flex gap-2 items-center cursor-pointer">
-            <Image src={Logo} className="w-6" alt="logo" />
-            <a className="text-xl font-black no-underline">
+            <Image src={Logo} className="w-6" alt="logo"></Image>
+            <span className="text-xl font-black no-underline">
               DocDocGoose
-            </a>
+            </span>
           </div>
         </Link>
       </div>

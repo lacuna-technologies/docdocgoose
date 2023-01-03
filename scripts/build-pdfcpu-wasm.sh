@@ -11,7 +11,7 @@ rm -Rf pdfcpu
 git clone --depth 1 https://github.com/hueyy/pdfcpu
 cd pdfcpu/cmd/pdfcpu
 GOOS=js GOARCH=wasm go build -o pdfcpu.wasm
-mv pdfcpu.wasm ../../../../public/wasm/
+mv pdfcpu.wasm ../../../../public/wasm/golang/
 rm -Rf pdfcpu
 
 cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ../public/wasm

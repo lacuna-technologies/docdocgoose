@@ -1,5 +1,6 @@
 declare var Go: any // TO FIX
 declare var fs: any
+declare var loadPyodide: any
 
 type PageInfo = {
   rotation: number,
@@ -36,6 +37,12 @@ type FileInfo = {
 }
 
 type ProcessFileResult = {
+  url: string,
+  fileName: string,
+}
+
+type GeneratedResult = {
+  size: number,
   url: string,
   fileName: string,
 }

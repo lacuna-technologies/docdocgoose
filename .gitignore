@@ -8,3 +8,4 @@ build/
 # Local Netlify folder
 .netlify
 out/
+/public/wasm/pyodide

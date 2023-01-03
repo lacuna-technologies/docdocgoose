@@ -152,7 +152,7 @@ const run = async (params: string[]) => {
   }
   go.argv = [`pdfcpu.wasm`, ...params]
   go.env = { HOME: `/`, TMPDIR: `/tmp`, ...go.env }
-  const result = await WebAssembly.instantiateStreaming(fetch(`/wasm/pdfcpu.wasm`), go.importObject)
+  const result = await WebAssembly.instantiateStreaming(fetch(`/wasm/golang/pdfcpu.wasm`), go.importObject)
   go.run(result.instance)
   const response = {
     exitCode: go.exitCode,
