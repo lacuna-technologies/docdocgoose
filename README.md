@@ -24,7 +24,7 @@ DocDocGoose uses [pdfcpu](https://github.com/pdfcpu/pdfcpu), a PDF processing li
 
 To run the WASM module in NodeJS, `cd` into the `public/wasm` folder and run `node node_wasm.js`.
 
-Current `pdfcpu` commit: [b9818b8a01eaaa742ef42cb9982fa4661445453e](https://github.com/pdfcpu/pdfcpu/commit/b9818b8a01eaaa742ef42cb9982fa4661445453e)
+Current `pdfcpu` commit: [07d9762](https://github.com/pdfcpu/pdfcpu/commit/07d97625e3fa00f05a6f7559a53463574329931a)
 
 ### Running in development
 
