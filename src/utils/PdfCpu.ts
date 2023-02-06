@@ -225,7 +225,7 @@ const getInfo = async (filePath: string): Promise<FileInfo> => {
     exitCode,
     stdout,
     stderr,
-  } = await run([`info`, filePath])
+  } = await run([`info`, `-c`, `disable`, filePath])
 
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
@@ -378,7 +378,7 @@ const optimise = async (filePath: string) => {
     exitCode,
     stdout,
     stderr,
-  } = await run([`optimize`, `-v`, filePath, outPath])
+  } = await run([`optimize`, `-c`, `disable`, `-v`, filePath, outPath])
   if(exitCode === 1 || exitCode === 2){
     throw new Error(stderr.join(`\n`))
   }
@@ -397,7 +397,8 @@ const decrypt = async (filePath: string, userPassword?: string) => {
     stderr,
   } = await run([
     `decrypt`,
-    ...(userPassword ? [`-upw`, userPassword] : []),
+    `-c`, `disable`,
+    ...(userPassword && userPassword.length > 0 ? [`-upw`, userPassword] : []),
     filePath,
   ])
 
@@ -424,6 +425,7 @@ const rotate = async (filePath: string, pageNumber: number, angle: number) => {
     stderr,
   } = await run([
     `rotate`,
+    `-c`, `disable`,
     `-p`,
     `${pageNumber}`,
     filePath,
@@ -446,6 +448,7 @@ const remove = async (filePath: string, pageNumber: number) => {
     stderr,
   } = await run([
     `pages`,
+    `-c`, `disable`,
     `remove`,
     `-p`,
     `${pageNumber}`,
@@ -468,6 +471,7 @@ const collect = async (filePath: string, pageNumbers: number[]) => {
     stderr,
   } = await run([
     `collect`,
+    `-c`, `disable`,
     `-p`,
     `${pageNumbers.join(`,`)}`,
     filePath,
@@ -495,6 +499,7 @@ const setProperties = async (filePath: string, fileInfo: FileInfo) => {
     stderr,
   } = await run([
     `properties`,
+    `-c`, `disable`,
     `add`,
     filePath,
     ...properties,
